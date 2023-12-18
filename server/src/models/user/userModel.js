@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     //     createdAt: { type: Date, default: null },
     //     expiredAt: { type: Date, default: null }
     // },
-    tokenVersion: { type: String, default: null }
+    // tokenVersion: { type: String, default: null }
 }, { timestamps: true });
 
 
