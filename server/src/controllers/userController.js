@@ -364,7 +364,6 @@ const createCompany = async (req, res) => {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorCreatingCompany, Error: error.message });
     }
 };
-
 // ------------------------------------ Add Team Member --------------------------------------
 const addTeamMember = async (req, res) => {
     try {
@@ -405,7 +404,7 @@ const addTeamMember = async (req, res) => {
 
         res.json({ Message: rm.memberAdded, Company: updatedCompany });
     } catch (error) {
-        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorAddingTeamMember , Error:error.message });
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorAddingTeamMember, Error: error.message });
     }
 };
 // ------------------------------------ Remove Team Member --------------------------------------
@@ -425,7 +424,7 @@ const removeTeamMember = async (req, res) => {
         if (!validateAdmin) {
             return res.status(rc.UNAUTHORIZED).json({ Message: rm.onlyAdminAddMember })
         }
-      
+
         const updatedCompany = await companyModel.findOneAndUpdate(
             { _id: id },
             { $pull: { team: { userID: memberID } } },
@@ -438,10 +437,23 @@ const removeTeamMember = async (req, res) => {
 
         return res.json({ Message: rm.memberRemoved, updatedCompany });
     } catch (error) {
-        return res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorRemovingTeamMember , Error:error.message});
+        return res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorRemovingTeamMember, Error: error.message });
     }
 
 };
+// ------------------------------------ getAllTeamMembers --------------------------------------
+const getAllTeamMembers = async (req, res) => {
+    try {
+        const { userID } = req.user;
+        const findOwner = await companyModel.findOne({ companyOwner: userID });
+        if (!findOwner) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.onlyOwnerGetTeam });
+        }
+        res.send(findOwner.team)
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingTeamMembers })
+    }
+}
 
 
 
@@ -454,5 +466,6 @@ module.exports = {
     verifyResetPasswordLink,
     createCompany,
     addTeamMember,
-    removeTeamMember
+    removeTeamMember,
+    getAllTeamMembers
 }

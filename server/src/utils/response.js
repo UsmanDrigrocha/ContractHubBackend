@@ -28,6 +28,8 @@ const responseMessages={
     memberRemoved:"Member Removed Successfully !",
     onlyAdminAddMember:"Only company owner can add team members !",
     memberRemoved:"Team Member Removed !",
+    errorGettingTeamMembers:"Error Getting Team Members !",
+    onlyOwnerGetTeam:"Only Owner can get members !",
 
 
     // Errors :
