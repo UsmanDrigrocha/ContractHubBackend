@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
     //     createdAt: { type: Date, default: null },
     //     expiredAt: { type: Date, default: null }
     // },
+    role: { type: String, default: "user" },
     tokenVersion: { type: String, default: null }
 }, { timestamps: true });
 
