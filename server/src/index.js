@@ -1,6 +1,6 @@
 const express = require('express');
-require('dotenv').config();
-require('./config/dbConnect');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });require('./config/dbConnect');
 const userRoutes = require('./routes/userRoutes');
 
 const app = express();
@@ -17,4 +17,3 @@ app.get('/', (req, res) => {
     res.json({ Message: "ContractHub Server Working Properly" })
 });
 
-// https://app.contracthub.com/verify/58f8ab40-9d8f-11ee-b0c6-3b16ef419239

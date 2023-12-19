@@ -40,13 +40,13 @@ const register = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        // const tokenVersion = generateTokenVersion(10);
+        const tokenVersion = generateTokenVersion(10);
 
         let newUser = new userModel({
             name,
             email,
             password: hashedPassword,
-            // tokenVersion
+            tokenVersion
         });
         await newUser.save();
         const userId = newUser._id;
