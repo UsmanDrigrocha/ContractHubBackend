@@ -24,6 +24,10 @@ const responseMessages={
     cantInvite:"Can't Invite unregistered user !",
     cantCreateCompanyOnThisMail:"Mail already registered ! Can't Create company on this mail !",
     companyNotExist:"Company Not Exist !",
+    memberAdded:'Team members added successfully',
+    memberRemoved:"Member Removed Successfully !",
+    onlyAdminAddMember:"Only company owner can add team members !",
+    memberRemoved:"Team Member Removed !",
 
 
     // Errors :
@@ -32,7 +36,8 @@ const responseMessages={
     errorVerifying:"Error Verifying Email !",
     errorVerifyingResetLink:"Error Verifying Reset Link !",
     errorCreatingCompany:"Error Creating Company !",
-    errorAddingTeamMember:"Error Adding Team Member !"
+    errorAddingTeamMember:"Error Adding Team Member !",
+    errorRemovingTeamMember:"Error Removing Team Member !"
 
 }
 

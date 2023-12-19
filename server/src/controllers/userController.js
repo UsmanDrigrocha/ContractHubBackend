@@ -324,8 +324,8 @@ const createCompany = async (req, res) => {
         const { compName, compEmail, team, compAddress, compPhone } = req.body;
         const { userID } = req.user;
 
-        if(compEmail.includes(' ')){
-            return res.status(rc.BAD_REQUEST).json({Message:rm.blankSpaceNotAllowed})
+        if (compEmail.includes(' ')) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.blankSpaceNotAllowed })
         }
 
         const newCompany = new companyModel({
@@ -334,12 +334,12 @@ const createCompany = async (req, res) => {
             compEmail,
             compAddress,
             compPhone,
-            team: [] 
+            team: []
         });
 
-        const findCompany = await companyModel.findOne({compEmail});
-        if(findCompany){
-            return res.status(rc.BAD_REQUEST).json({Message:rm.cantCreateCompanyOnThisMail})
+        const findCompany = await companyModel.findOne({ compEmail });
+        if (findCompany) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.cantCreateCompanyOnThisMail })
             return console.log(findCompany)
         }
 
@@ -373,11 +373,17 @@ const addTeamMember = async (req, res) => {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
 
+
+
         const findCompany = await companyModel.findOne({ _id: id });
         if (!findCompany) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.companyNotExist });
         }
 
+        const validateAdmin = await companyModel.findOne({ companyOwner: req.user.userID })
+        if (!validateAdmin) {
+            return res.status(rc.UNAUTHORIZED).json({ Message: rm.onlyAdminAddMember })
+        }
         const { team } = req.body;
 
         for (const member of team) {
@@ -386,25 +392,60 @@ const addTeamMember = async (req, res) => {
             if (findUser) {
                 findCompany.team.push({
                     userID: findUser._id,
-                    role: member.role, 
-                    title: member.title 
+                    role: member.role,
+                    title: member.title
                 });
             } else {
-               return res.status(rc.BAD_REQUEST).json({Message:rm.userNotFound})
+                return res.status(rc.BAD_REQUEST).json({ Message: rm.userNotFound })
             }
         }
 
         // Save the updated company document
         const updatedCompany = await findCompany.save();
 
-        res.json({ Message: 'Team members added successfully', Company: updatedCompany });
+        res.json({ Message: rm.memberAdded, Company: updatedCompany });
     } catch (error) {
-        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorAddingTeamMember });
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorAddingTeamMember , Error:error.message });
     }
 };
+// ------------------------------------ Remove Team Member --------------------------------------
+const removeTeamMember = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+        }
+
+        const { memberID } = req.body;
+
+        if (!memberID) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+        }
+        const validateAdmin = await companyModel.findOne({ companyOwner: req.user.userID })
+        if (!validateAdmin) {
+            return res.status(rc.UNAUTHORIZED).json({ Message: rm.onlyAdminAddMember })
+        }
+      
+        const updatedCompany = await companyModel.findOneAndUpdate(
+            { _id: id },
+            { $pull: { team: { userID: memberID } } },
+            { new: true }
+        );
+
+        if (!updatedCompany) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.companyNotExist });
+        }
+
+        return res.json({ Message: rm.memberRemoved, updatedCompany });
+    } catch (error) {
+        return res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorRemovingTeamMember , Error:error.message});
+    }
+
+};
+
+
 
 // ------------------------------------ Exports --------------------------------------
-
 module.exports = {
     register,
     login,
@@ -412,5 +453,6 @@ module.exports = {
     sendResetPasswordLink,
     verifyResetPasswordLink,
     createCompany,
-    addTeamMember
+    addTeamMember,
+    removeTeamMember
 }
