@@ -6,6 +6,7 @@ const route = express.Router();
 const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers } = require('../controllers/userController');
 const { validateToken } = require('../middlewares/validateToken');
 
+// User Auth Routes
 route.post('/register', register);
 route.post('/login', login);
 route.post('/verify/:token', verifyEmail);
