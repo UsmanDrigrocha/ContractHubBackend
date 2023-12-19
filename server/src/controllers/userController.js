@@ -319,59 +319,6 @@ const verifyResetPasswordLink = async (req, res) => {
 }
 
 // ------------------------------------ Create Company --------------------------------------
-// const createCompany = async (req, res) => {
-//     try {
-//         const { compName, compEmail } = req.body;
-//         const { userID } = req.user;
-//         const newCompany = new companyModel({
-//             companyOwner: userID,
-//             compName,
-//             compEmail
-//         });
-//         if (req.body.compPhone) {
-//             newCompany.compPhone = req.body.compPhone;
-//         }
-//         if (req.body.compAddress) {
-//             newCompany.compAddress = req.body.compAddress;
-//         }
-
-//         if (req.body.team && req.body.team.length > 0) {
-//             const teamMembers = req.body.team;
-
-//             for (let i = 0; i < teamMembers.length; i++) {
-//                 const userID = teamMembers[i].userID;
-//                 console.log(userID); // Log the userID for debugging
-
-
-//                 const findTeamMember = await userModel.findOne({ _id: userID, isDeleted: false });
-
-//                 if (!findTeamMember) {
-//                     return res.status(rc.BAD_REQUEST).json({ Message: rm.userNotFound });
-//                 }
-
-//                 newCompany.team.userID=findTeamMember._id;
-
-//             }
-//         }
-
-
-//         // if (req.body.team) {
-//         //     newCompany.team = req.body.team;
-//         //     const userID = newCompany.team[0].userID;
-//         //     console.log(userID)
-//         //     const findTeamMember = await userModel.findOne({ _id: userID, isDeleted: false });
-//         //     if (!req.body.team.userID) {
-//         //         return res.status(rc.BAD_REQUEST).json({ Message: rm.cantInvite })
-//         //     }
-//         // }
-//         await newCompany.save();
-//         res.json({ Message: rm.companyCreated, Company: newCompany })
-//     } catch (error) {
-//         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorCreatingCompany, Error: error.message })
-//     }
-// }
-
-
 const createCompany = async (req, res) => {
     try {
         const { compName, compEmail, team, compAddress, compPhone } = req.body;
@@ -418,6 +365,43 @@ const createCompany = async (req, res) => {
     }
 };
 
+// ------------------------------------ Add Team Member --------------------------------------
+const addTeamMember = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+        }
+
+        const findCompany = await companyModel.findOne({ _id: id });
+        if (!findCompany) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.companyNotExist });
+        }
+
+        const { team } = req.body;
+
+        for (const member of team) {
+            const findUser = await userModel.findOne({ _id: member.userID });
+
+            if (findUser) {
+                findCompany.team.push({
+                    userID: findUser._id,
+                    role: member.role, 
+                    title: member.title 
+                });
+            } else {
+               return res.status(rc.BAD_REQUEST).json({Message:rm.userNotFound})
+            }
+        }
+
+        // Save the updated company document
+        const updatedCompany = await findCompany.save();
+
+        res.json({ Message: 'Team members added successfully', Company: updatedCompany });
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorAddingTeamMember });
+    }
+};
 
 // ------------------------------------ Exports --------------------------------------
 
@@ -427,5 +411,6 @@ module.exports = {
     verifyEmail,
     sendResetPasswordLink,
     verifyResetPasswordLink,
-    createCompany
+    createCompany,
+    addTeamMember
 }

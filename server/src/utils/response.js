@@ -23,6 +23,7 @@ const responseMessages={
     companyCreated:"Company Created Successfully !",
     cantInvite:"Can't Invite unregistered user !",
     cantCreateCompanyOnThisMail:"Mail already registered ! Can't Create company on this mail !",
+    companyNotExist:"Company Not Exist !",
 
 
     // Errors :
@@ -30,7 +31,8 @@ const responseMessages={
     errorLogin:"Error Logging In User !",
     errorVerifying:"Error Verifying Email !",
     errorVerifyingResetLink:"Error Verifying Reset Link !",
-    errorCreatingCompany:"Error Creating Company !"
+    errorCreatingCompany:"Error Creating Company !",
+    errorAddingTeamMember:"Error Adding Team Member !"
 
 }
 
