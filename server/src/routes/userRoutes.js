@@ -12,11 +12,17 @@ route.post('/verify/:token', verifyEmail);
 route.post('/send-reset-link', sendResetPasswordLink);
 route.post('/verify-reset-link/:token', verifyResetPasswordLink);
 
-// Secure Routes
-route.post('/createCompany', validateToken, createCompany)
-route.post('/addTeamMember/:id', validateToken, addTeamMember)
-route.delete('/deleteTeamMember/:id', validateToken, removeTeamMember)
-route.get('/getAllTeamMembers', validateToken, getAllTeamMembers)
+// Secure Get Routes
+route.post('/createCompany', validateToken, createCompany);
+route.post('/addTeamMember/:id', validateToken, addTeamMember);
+
+// Secure Post Routes
+route.get('/getAllTeamMembers', validateToken, getAllTeamMembers);
 
 
+// Secure Delete Routes
+route.delete('/deleteTeamMember/:id', validateToken, removeTeamMember);
+
+
+// Exporting Route
 module.exports = route;
