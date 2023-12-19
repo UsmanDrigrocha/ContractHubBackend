@@ -9,6 +9,7 @@ const { generateTokenVersion } = require('../utils/generateTokenVersion');
 const jwt = require('jsonwebtoken');
 
 const mail = require('../utils/sendMail');
+const companyModel = require('../models/user/companyModel');
 
 const { TokenExpiredError } = jwt;
 
@@ -317,7 +318,105 @@ const verifyResetPasswordLink = async (req, res) => {
     }
 }
 
-// ------------------------------------ ----- --------------------------------------
+// ------------------------------------ Create Company --------------------------------------
+// const createCompany = async (req, res) => {
+//     try {
+//         const { compName, compEmail } = req.body;
+//         const { userID } = req.user;
+//         const newCompany = new companyModel({
+//             companyOwner: userID,
+//             compName,
+//             compEmail
+//         });
+//         if (req.body.compPhone) {
+//             newCompany.compPhone = req.body.compPhone;
+//         }
+//         if (req.body.compAddress) {
+//             newCompany.compAddress = req.body.compAddress;
+//         }
+
+//         if (req.body.team && req.body.team.length > 0) {
+//             const teamMembers = req.body.team;
+
+//             for (let i = 0; i < teamMembers.length; i++) {
+//                 const userID = teamMembers[i].userID;
+//                 console.log(userID); // Log the userID for debugging
+
+
+//                 const findTeamMember = await userModel.findOne({ _id: userID, isDeleted: false });
+
+//                 if (!findTeamMember) {
+//                     return res.status(rc.BAD_REQUEST).json({ Message: rm.userNotFound });
+//                 }
+
+//                 newCompany.team.userID=findTeamMember._id;
+
+//             }
+//         }
+
+
+//         // if (req.body.team) {
+//         //     newCompany.team = req.body.team;
+//         //     const userID = newCompany.team[0].userID;
+//         //     console.log(userID)
+//         //     const findTeamMember = await userModel.findOne({ _id: userID, isDeleted: false });
+//         //     if (!req.body.team.userID) {
+//         //         return res.status(rc.BAD_REQUEST).json({ Message: rm.cantInvite })
+//         //     }
+//         // }
+//         await newCompany.save();
+//         res.json({ Message: rm.companyCreated, Company: newCompany })
+//     } catch (error) {
+//         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorCreatingCompany, Error: error.message })
+//     }
+// }
+
+
+const createCompany = async (req, res) => {
+    try {
+        const { compName, compEmail, team, compAddress, compPhone } = req.body;
+        const { userID } = req.user;
+
+        if(compEmail.includes(' ')){
+            return res.status(rc.BAD_REQUEST).json({Message:rm.blankSpaceNotAllowed})
+        }
+
+        const newCompany = new companyModel({
+            companyOwner: userID,
+            compName,
+            compEmail,
+            compAddress,
+            compPhone,
+            team: [] 
+        });
+
+        const findCompany = await companyModel.findOne({compEmail});
+        if(findCompany){
+            return res.status(rc.BAD_REQUEST).json({Message:rm.cantCreateCompanyOnThisMail})
+            return console.log(findCompany)
+        }
+
+        if (team && team.length > 0) {
+            for (const member of team) {
+                const { userID, role, title } = member;
+
+                const findTeamMember = await userModel.findOne({ _id: userID, isDeleted: false });
+
+                if (!findTeamMember) {
+                    return res.status(rc.BAD_REQUEST).json({ Message: rm.userNotFound });
+                }
+
+                // Push an object with userID, role, and title into the company's team array
+                newCompany.team.push({ userID, role, title });
+            }
+        }
+
+        await newCompany.save();
+        res.json({ Message: rm.companyCreated, Company: newCompany });
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorCreatingCompany, Error: error.message });
+    }
+};
 
 
 // ------------------------------------ Exports --------------------------------------
@@ -327,5 +426,6 @@ module.exports = {
     login,
     verifyEmail,
     sendResetPasswordLink,
-    verifyResetPasswordLink
+    verifyResetPasswordLink,
+    createCompany
 }

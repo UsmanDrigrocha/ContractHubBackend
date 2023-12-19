@@ -20,13 +20,17 @@ const responseMessages={
     resetLinkSent:"Check Email for reset password link !",
     errorChangingPassword:"Error Changing Password !",
     passwordUpdated:"Password Updated Successfully !",
+    companyCreated:"Company Created Successfully !",
+    cantInvite:"Can't Invite unregistered user !",
+    cantCreateCompanyOnThisMail:"Mail already registered ! Can't Create company on this mail !",
 
 
     // Errors :
     errorRegister:"Error Registering User !",
     errorLogin:"Error Logging In User !",
     errorVerifying:"Error Verifying Email !",
-    errorVerifyingResetLink:"Error Verifying Reset Link !"
+    errorVerifyingResetLink:"Error Verifying Reset Link !",
+    errorCreatingCompany:"Error Creating Company !"
 
 }
 
