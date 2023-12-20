@@ -5,11 +5,10 @@
     "description": "Contract HUB : Webiste Backend",
     "version": "1.0.0"
   },
-  "host": "localhost:9090",
+  "host": "192.168.0.163:9090",
   "basePath": "/",
   "schemes": [
-    "http",
-    "https"
+    "http"
   ],
   "paths": {
     "/": {

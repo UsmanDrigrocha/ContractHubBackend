@@ -5,8 +5,8 @@ const doc = {
         title:"Contract HUB",
         description:"Contract HUB : Webiste Backend"
     },
-    host:"localhost:9090",
-    schemes:['http','https']
+    host:"192.168.0.163:9090",
+    schemes:['http']
 }
 
 const outputFile = './swagger-output.json'
