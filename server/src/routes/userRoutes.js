@@ -3,7 +3,7 @@ const express = require('express');
 const route = express.Router();
 
 
-const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers } = require('../controllers/userController');
+const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers, changeCompanyStatus } = require('../controllers/userController');
 const { validateToken } = require('../middlewares/validateToken');
 
 // User Auth Routes
@@ -16,6 +16,7 @@ route.post('/verify-reset-link/:token', verifyResetPasswordLink);
 // Secure Get Routes
 route.post('/createCompany', validateToken, createCompany);
 route.post('/addTeamMember/:id', validateToken, addTeamMember);
+route.post('/changeCompanyStatus',validateToken,changeCompanyStatus);
 
 // Secure Post Routes
 route.get('/getAllTeamMembers', validateToken, getAllTeamMembers);

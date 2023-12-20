@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     isActive: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
+    companyStatus: { type: mongoose.Schema.Types.ObjectId, ref: "Companies", default: null },
     // otp: {
     //     code: { type: String, default: null },
     //     createdAt: { type: Date, default: null },

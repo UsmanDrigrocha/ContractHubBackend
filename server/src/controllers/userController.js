@@ -329,7 +329,9 @@ const createCompany = async (req, res) => {
         }
 
         const newCompany = new companyModel({
-            companyOwner: userID,
+            companyOwner: {
+                userID: userID,
+            },
             compName,
             compEmail,
             compAddress,
@@ -340,7 +342,6 @@ const createCompany = async (req, res) => {
         const findCompany = await companyModel.findOne({ compEmail });
         if (findCompany) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.cantCreateCompanyOnThisMail })
-            return console.log(findCompany)
         }
 
         if (team && team.length > 0) {
@@ -379,7 +380,7 @@ const addTeamMember = async (req, res) => {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.companyNotExist });
         }
 
-        const validateAdmin = await companyModel.findOne({ companyOwner: req.user.userID })
+        const validateAdmin = await companyModel.findOne({ 'companyOwner.userID': req.user.userID })
         if (!validateAdmin) {
             return res.status(rc.UNAUTHORIZED).json({ Message: rm.onlyAdminAddMember })
         }
@@ -420,7 +421,8 @@ const removeTeamMember = async (req, res) => {
         if (!memberID) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
-        const validateAdmin = await companyModel.findOne({ companyOwner: req.user.userID })
+        const validateAdmin = await companyModel.findOne({ 'companyOwner.userID': req.user.userID });
+        console.log(validateAdmin)
         if (!validateAdmin) {
             return res.status(rc.UNAUTHORIZED).json({ Message: rm.onlyAdminAddMember })
         }
@@ -445,7 +447,7 @@ const removeTeamMember = async (req, res) => {
 const getAllTeamMembers = async (req, res) => {
     try {
         const { userID } = req.user;
-        const findOwner = await companyModel.findOne({ companyOwner: userID });
+        const findOwner = await companyModel.findOne({ 'companyOwner.userID': userID });
         if (!findOwner) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.onlyOwnerGetTeam });
         }
@@ -454,6 +456,38 @@ const getAllTeamMembers = async (req, res) => {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingTeamMembers })
     }
 }
+
+// ------------------------------------ change Company Status --------------------------------------
+const changeCompanyStatus = async (req, res) => {
+    try {
+        const { companyID } = req.body;
+        if (!companyID) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+        }
+        const findCompany = await companyModel
+            .findOne({ _id: companyID })
+            .populate('companyOwner');
+        if (!findCompany) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.companyNotExist })
+        }
+        const user = await userModel.findOne({
+            _id: req.user.userID,
+            $or: [
+                { _id: findCompany.companyOwner.userID },
+                { _id: { $in: findCompany.team.map(member => member.userID) } }
+            ]
+        }).populate('companyStatus');
+        user.companyStatus = companyID;
+        await user.save();
+        const updatedUser = await userModel
+            .findById(req.user.userID)
+            .populate('companyStatus');
+        res.json({ Message: rm.companyChanged, Company: updatedUser.companyStatus })
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorChagningCompanyStatus, Error: error.message });
+    }
+}
+// ------------------------------------ Get User's Companies --------------------------------------
 
 
 
@@ -467,5 +501,7 @@ module.exports = {
     createCompany,
     addTeamMember,
     removeTeamMember,
-    getAllTeamMembers
+    getAllTeamMembers,
+    //
+    changeCompanyStatus
 }
