@@ -32,6 +32,7 @@ const responseMessages = {
     onlyOwnerGetTeam: "Only Owner can get members !",
     errorChagningCompanyStatus: "Error Changing Company Status",
     companyChanged:"Company Changed !",
+    errorGettingUserCompanies:"Error Getting User Companies !",
 
 
 

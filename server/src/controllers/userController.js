@@ -488,6 +488,27 @@ const changeCompanyStatus = async (req, res) => {
     }
 }
 // ------------------------------------ Get User's Companies --------------------------------------
+const getUserCompanies = async (req, res) => {
+    try {
+        const userId = req.user.userID;
+        const findUser = await userModel.findOne({ _id: userId, isDeleted: false });
+
+        if (!findUser) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.notRegistered });
+        }
+
+        const findCompanies = await companyModel.find({
+            $or: [
+                { 'companyOwner.userID': userId }, // Check if the user is the company owner
+                { 'team.userID': userId } // Check if the user is a team member
+            ]
+        });
+
+        res.json({ Companies: findCompanies, TotalCompanies: findCompanies.length });
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingUserCompanies });
+    }
+};
 
 
 
@@ -503,5 +524,6 @@ module.exports = {
     removeTeamMember,
     getAllTeamMembers,
     //
-    changeCompanyStatus
+    changeCompanyStatus,
+    getUserCompanies
 }
