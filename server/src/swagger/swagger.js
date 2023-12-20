@@ -2,10 +2,10 @@ const swaggerAutogen = require('swagger-autogen');
 
 const doc = {
     info: {
-        title:"The Pet Store Backend",
-        description:"This is The Pet Store"
+        title:"Contract HUB",
+        description:"Contract HUB : Webiste Backend"
     },
-    host:"localhost:8080",
+    host:"localhost:9090",
     schemes:['http','https']
 }
 

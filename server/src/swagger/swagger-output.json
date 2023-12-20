@@ -1,11 +1,11 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "The Pet Store Backend",
-    "description": "This is The Pet Store",
+    "title": "Contract HUB",
+    "description": "Contract HUB : Webiste Backend",
     "version": "1.0.0"
   },
-  "host": "localhost:8080",
+  "host": "localhost:9090",
   "basePath": "/",
   "schemes": [
     "http",
