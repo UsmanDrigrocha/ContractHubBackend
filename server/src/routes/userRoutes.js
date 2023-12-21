@@ -3,7 +3,7 @@ const express = require('express');
 const route = express.Router();
 
 
-const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers, changeCompanyStatus, getUserCompanies } = require('../controllers/userController');
+const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers, changeCompanyStatus, getUserCompanies, createFolder, getAllFolders } = require('../controllers/userController');
 const { validateToken } = require('../middlewares/validateToken');
 
 // User Auth Routes
@@ -17,11 +17,12 @@ route.post('/verify-reset-link/:token', verifyResetPasswordLink);
 route.post('/createCompany', validateToken, createCompany);
 route.post('/addTeamMember/:id', validateToken, addTeamMember);
 route.post('/changeCompanyStatus',validateToken,changeCompanyStatus);
-route.get('/getUserCompanies',validateToken,getUserCompanies);
+route.post('/createFolder',validateToken,createFolder)
 
 // Secure Post Routes
 route.get('/getAllTeamMembers', validateToken, getAllTeamMembers);
-
+route.get('/getUserCompanies',validateToken,getUserCompanies);
+route.get('/getAllFolders',validateToken,getAllFolders)
 
 // Secure Delete Routes
 route.delete('/deleteTeamMember/:id', validateToken, removeTeamMember);

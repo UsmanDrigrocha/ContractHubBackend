@@ -11,25 +11,21 @@ async function mail(sendMailto, mailSubject, mailText, mailHTMLBody) {
                 pass: 'cDTr4VD2vgnU77Gbcu'
             }
         });
-        
-        async function main() {
-            const info = await transporter.sendMail({
-                from: '"Contract Hub 👻" <contracthub@example.com>', // sender address
-                to: `${sendMailto}`, // recipent address
-                subject: `${mailSubject} ✔`, // Subject line
-                text: `${mailText}`, // plain text body
-                html: `${mailHTMLBody}`, // html body
-            });
-            console.log("Message sent: %s", info.messageId);
-        }
 
-        main();
+        const info = await transporter.sendMail({
+            from: '"Contract Hub 👻" <contracthub@example.com>', // sender address
+            to: `${sendMailto}`, // recipient address
+            subject: `${mailSubject} ✔`, // Subject line
+            text: `${mailText}`, // plain text body
+            html: `${mailHTMLBody}`, // html body
+        });
+        
+        console.log("Message sent: %s", info.messageId);
         return true;
     } catch (error) {
+        console.error("Error sending email:", error);
         return false;
     }
-};
+}
 
 module.exports = mail;
-
-// const emailSent = await mail(recipientEmail, emailSubject, mailText, emailHTMLBody);

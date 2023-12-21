@@ -5,7 +5,7 @@
     "description": "Contract HUB : Webiste Backend",
     "version": "1.0.0"
   },
-  "host": "192.168.0.163:9090",
+  "host": "192.168.100.47:9090",
   "basePath": "/",
   "schemes": [
     "http"
@@ -273,6 +273,64 @@
         }
       }
     },
+    "/api/user/createFolder": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/user/getAllTeamMembers": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/api/user/getUserCompanies": {
       "get": {
         "description": "",
@@ -296,7 +354,7 @@
         }
       }
     },
-    "/api/user/getAllTeamMembers": {
+    "/api/user/getAllFolders": {
       "get": {
         "description": "",
         "parameters": [

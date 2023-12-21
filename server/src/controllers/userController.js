@@ -10,6 +10,7 @@ const jwt = require('jsonwebtoken');
 
 const mail = require('../utils/sendMail');
 const companyModel = require('../models/user/companyModel');
+const folderModel = require('../models/user/folderModel');
 
 const { TokenExpiredError } = jwt;
 
@@ -509,7 +510,59 @@ const getUserCompanies = async (req, res) => {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingUserCompanies });
     }
 };
+// ------------------------------------ Create Folder --------------------------------------
+const createFolder = async (req, res) => {
+    try {
+        const { userID } = req.user;
+        const { name } = req.body;
 
+        if (!name) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+        }
+
+        const companyInfo = await companyModel.findOne({'companyOwner.userID':userID}); 
+
+        if(!companyInfo){
+            return res.status(rc.BAD_REQUEST).json({Message:rm.companyNotExist})
+        }
+
+        const isAdminOrOwner = companyInfo.companyOwner.userID === userID && companyInfo.companyOwner.role === 'Super Admin';
+
+        const adminInTeam = companyInfo.team.find(member => member.userID === userID && member.role.includes('admin'));
+
+        if (!isAdminOrOwner && !adminInTeam) {
+            return res.status(rc.UNAUTHORIZED).json({ Message: rm.unauthorizedAction });
+        }
+
+        const newFolder = new folderModel({
+            name,
+            folderOwner: [userID]
+        });
+
+        await newFolder.save();
+
+        res.json({ Message: rm.folderCreatedSuccessfully, Folder: newFolder });
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorCreatingFolder, Error: error.message });
+    }
+};
+
+// ------------------------------------ ============ --------------------------------------
+
+const getAllFolders = async (req, res) => {
+    try {
+        const { userID } = req.user;
+
+        const folders = await folderModel.find({ folderOwner: userID });
+
+        res.json({ Folders: folders });
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorFetchingFolders, Error: error.message });
+    }
+};
+
+
+// ------------------------------------ ============ --------------------------------------
 
 
 // ------------------------------------ Exports --------------------------------------
@@ -523,7 +576,9 @@ module.exports = {
     addTeamMember,
     removeTeamMember,
     getAllTeamMembers,
-    //
     changeCompanyStatus,
-    getUserCompanies
+    getUserCompanies,
+    createFolder,
+    //
+    getAllFolders
 }

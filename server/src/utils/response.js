@@ -33,6 +33,10 @@ const responseMessages = {
     errorChagningCompanyStatus: "Error Changing Company Status",
     companyChanged:"Company Changed !",
     errorGettingUserCompanies:"Error Getting User Companies !",
+    errorCreatingFolder:"Error Creating Folder !",
+    folderCreatedSuccessfully:"Folder Created Successfully !",
+    unauthorizedAction:"Unauthorized !",
+    errorFetchingFolders:"Error Getting Folders !",
 
 
 
