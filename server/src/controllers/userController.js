@@ -520,15 +520,15 @@ const createFolder = async (req, res) => {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
 
-        const companyInfo = await companyModel.findOne({'companyOwner.userID':userID}); 
+        const companyInfo = await companyModel.findOne({ 'companyOwner.userID': userID });
 
-        if(!companyInfo){
-            return res.status(rc.BAD_REQUEST).json({Message:rm.companyNotExist})
+        if (!companyInfo) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.companyNotExist })
         }
 
-        const isAdminOrOwner = companyInfo.companyOwner.userID === userID && companyInfo.companyOwner.role === 'Super Admin';
 
-        const adminInTeam = companyInfo.team.find(member => member.userID === userID && member.role.includes('admin'));
+        const isAdminOrOwner = companyInfo.companyOwner.userID.toString() === userID.toString() && companyInfo.companyOwner.role === 'Super Admin';
+
 
         if (!isAdminOrOwner && !adminInTeam) {
             return res.status(rc.UNAUTHORIZED).json({ Message: rm.unauthorizedAction });
@@ -547,7 +547,7 @@ const createFolder = async (req, res) => {
     }
 };
 
-// ------------------------------------ ============ --------------------------------------
+// ------------------------------------ Get All Folders --------------------------------------
 
 const getAllFolders = async (req, res) => {
     try {
@@ -562,7 +562,22 @@ const getAllFolders = async (req, res) => {
 };
 
 
-// ------------------------------------ ============ --------------------------------------
+// ------------------------------------ Delete Folder --------------------------------------
+const deleteFolder = async (req, res) => {
+    try {
+        const { folderID } = req.params;
+        
+        const deletedFolder = await folderModel.findByIdAndDelete(folderID);
+
+        if (!deletedFolder) {
+            return res.status(404).json({ message: 'Folder not found' });
+        }
+
+        res.json({ message: 'Folder deleted successfully', deletedFolder });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting folder', error: error.message });
+    }
+}
 
 
 // ------------------------------------ Exports --------------------------------------
@@ -580,5 +595,6 @@ module.exports = {
     getUserCompanies,
     createFolder,
     //
-    getAllFolders
+    getAllFolders,
+    deleteFolder
 }

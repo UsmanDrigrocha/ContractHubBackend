@@ -37,6 +37,7 @@ const responseMessages = {
     folderCreatedSuccessfully:"Folder Created Successfully !",
     unauthorizedAction:"Unauthorized !",
     errorFetchingFolders:"Error Getting Folders !",
+    errorDeletingFolder:"Error Deleting Folder !",
 
 
 
