@@ -130,7 +130,6 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log(email, password)
         if (!email || !password) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields })
         }
@@ -312,7 +311,6 @@ const verifyResetPasswordLink = async (req, res) => {
 
             updatePassword.password = hashedPassword;
             await updatePassword.save();
-            console.log(updatePassword)
 
             res.status(rc.OK).json({ Message: rm.passwordUpdated })
         }
@@ -429,7 +427,6 @@ const removeTeamMember = async (req, res) => {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
         const validateAdmin = await companyModel.findOne({ 'companyOwner.userID': req.user.userID });
-        console.log(validateAdmin)
         if (!validateAdmin) {
             return res.status(rc.UNAUTHORIZED).json({ Message: rm.onlyAdminAddMember })
         }
