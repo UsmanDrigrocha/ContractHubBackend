@@ -3,8 +3,8 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });require('./config/dbConnect');
 const userRoutes = require('./routes/userRoutes');
 const cors = require('cors');
-const swaggerUi=require('swagger-ui-express')
-
+const swaggerUi=require('swagger-ui-express');
+const bodyParser = require("body-parser");
 
 
 const app = express();
@@ -13,6 +13,8 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use('/api/user/', userRoutes);
 app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 
 

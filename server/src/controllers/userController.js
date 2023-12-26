@@ -566,7 +566,7 @@ const getAllFolders = async (req, res) => {
 const deleteFolder = async (req, res) => {
     try {
         const { folderID } = req.params;
-        
+
         const deletedFolder = await folderModel.findByIdAndDelete(folderID);
 
         if (!deletedFolder) {
@@ -579,7 +579,18 @@ const deleteFolder = async (req, res) => {
     }
 }
 
-
+// ------------------------------------ Upload Document --------------------------------------
+const saveDocumentToServer = async (req, res) => {
+    try {
+        const { document } = req.file;
+        if (!document) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+        }
+        res.send(document);
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorUploadingDocument });
+    }
+}
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
     register,
@@ -594,7 +605,7 @@ module.exports = {
     changeCompanyStatus,
     getUserCompanies,
     createFolder,
-    //
     getAllFolders,
-    deleteFolder
+    deleteFolder,
+    saveDocumentToServer
 }
