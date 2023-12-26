@@ -8,8 +8,14 @@ const { generateTokenVersion } = require('../utils/generateTokenVersion');
 
 const jwt = require('jsonwebtoken');
 
+const multer = require('multer');
+
+const path = require('path'); 
+
 const mail = require('../utils/sendMail');
+
 const companyModel = require('../models/user/companyModel');
+
 const folderModel = require('../models/user/folderModel');
 
 const { TokenExpiredError } = jwt;
@@ -579,18 +585,56 @@ const deleteFolder = async (req, res) => {
     }
 }
 
-// ------------------------------------ Upload Document --------------------------------------
+// ------------------------------------ Upload Document Logic --------------------------------------
+const allowedDocumentType = ['application/pdf'];
+
+const DocumentFilter = (req, file, cb) => {
+    if (allowedDocumentType.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only PDF Allowed!'), false);
+    }
+};
+
+const store = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, '../uploads'); // Folder Destination
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const fileExtension = path.extname(file.originalname);
+        cb(null, file.fieldname + '-' + uniqueSuffix + fileExtension);
+    }
+});
+
+const upload = multer({ storage: store, fileFilter: DocumentFilter });
+
+// Upload Document API
 const saveDocumentToServer = async (req, res) => {
     try {
-        const { document } = req.file;
-        if (!document) {
-            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
-        }
-        res.send(document);
+        upload.single('Document')(req, res, (err) => {
+            if (err instanceof multer.MulterError) {
+                return res.status(rc.BAD_REQUEST).json({ Message: rm.multerError, error: err.message });
+            } else if (err) {
+                return res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorUploadingDocument , Error:err.message});
+            }
+
+            if (!req?.file) {
+                return res.status(rc.BAD_REQUEST).json({ Message:rm.enterAllFields });
+            }
+
+            const fileType = req.file.mimetype;
+            const fileName = req.file.filename;
+            const fileURL = `${fileName}`;
+
+            res.status(rc.OK).json({ message: rm.documentUploadedSuccessfully, url: fileURL });
+        });
+
     } catch (error) {
-        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorUploadingDocument, Error: error.message });
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ message: rm.errorUploadingDocument });
     }
-}
+};
+
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
     register,

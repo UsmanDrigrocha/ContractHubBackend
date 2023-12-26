@@ -39,6 +39,8 @@ const responseMessages = {
     errorFetchingFolders:"Error Getting Folders !",
     errorDeletingFolder:"Error Deleting Folder !",
     errorUploadingDocument:"Error Uploading Document !",
+    multerError:"Something went wrong with the file upload.",
+    documentUploadedSuccessfully:"Document Uploaded to Server",
 
 
 
