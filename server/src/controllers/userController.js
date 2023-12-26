@@ -588,7 +588,7 @@ const saveDocumentToServer = async (req, res) => {
         }
         res.send(document);
     } catch (error) {
-        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorUploadingDocument });
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorUploadingDocument, Error: error.message });
     }
 }
 // ------------------------------------ Exports --------------------------------------
