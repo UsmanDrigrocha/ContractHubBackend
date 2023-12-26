@@ -38,6 +38,8 @@ const responseMessages = {
     unauthorizedAction:"Unauthorized !",
     errorFetchingFolders:"Error Getting Folders !",
     errorDeletingFolder:"Error Deleting Folder !",
+    errorUploadingDocument:"Error Uploading Document !",
+
 
 
 
