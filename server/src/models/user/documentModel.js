@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const documentSchema = new mongoose.Schema({
     docName: { type: String, required: true },
     docURL: { type: String, required: true },
-    docOwner: { type: mongoose.Schema.Types.ObjectId, required: true },
+    docOwner: [{ type: mongoose.Schema.Types.ObjectId, required: true }],
     docFolder: { type: mongoose.Schema.Types.ObjectId, required: true },
     isSigned: { type: Boolean, required: true, default: false },
     status: {
@@ -11,7 +11,8 @@ const documentSchema = new mongoose.Schema({
         required: true,
         default: "pending",
         enum: ["pending", "completed"]
-    }, receiver: { type: String, required: true }
+    },
+    receiver: [{ type: String, required: true }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Documents', documentSchema);

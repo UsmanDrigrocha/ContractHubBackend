@@ -637,7 +637,7 @@ const saveDocumentToServer = async (req, res) => {
 const createDocument = async (req, res) => {
     try {
         const { userID } = req.user;
-        const docOwner = userID;
+        let docsOwner = userID;
         const { docFolder, docURL, docName, receiver } = req.body;
         if (!docFolder || !docURL || !docName || !receiver) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields })
@@ -646,9 +646,11 @@ const createDocument = async (req, res) => {
             docFolder,
             docURL,
             docName,
-            receiver,
-            docOwner
-        })
+            receiver: [],
+            docOwner: []
+        });
+        newDoc.docOwner.push(docsOwner);
+        newDoc.receiver.push(receiver)
         await newDoc.save();
         res.status(rc.CREATED).json({ Message: rm.docCreatedSuccessfully, Doc: newDoc })
     } catch (error) {
@@ -658,7 +660,8 @@ const createDocument = async (req, res) => {
 // ------------------------------------ Create All Document --------------------------------------
 const getAllDocuments = async (req, res) => {
     try {
-        res.send('...')
+        const { userID } = req.body;
+        // const findAllDocuments = 
     } catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs })
     }
