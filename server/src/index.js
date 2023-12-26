@@ -12,10 +12,7 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use('/api/user/', userRoutes);
-app.use(cors({
-    origin: 'http://localhost:4200',
-    optionsSuccessStatus: 200 // Some legacy browsers (IE11) choke on 204
-}));
+app.use(cors());
 
 app.use(bodyParser.json());
 
