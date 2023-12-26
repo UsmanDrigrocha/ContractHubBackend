@@ -4,6 +4,7 @@ const responseCodes = {
     UNAUTHORIZED: 401,
     NOT_FOUND: 404,
     INTERNAL_SERVER_ERROR: 500,
+    CREATED:201
 };
 
 const responseMessages = {
@@ -41,11 +42,13 @@ const responseMessages = {
     errorUploadingDocument:"Error Uploading Document !",
     multerError:"Something went wrong with the file upload.",
     documentUploadedSuccessfully:"Document Uploaded to Server",
+    errorCreatingDocument:"Error Creating Document !",
+    docCreatedSuccessfully:"Document Created Successfully !",
+    errorGettingDocs:"Error Getting Documents !",
 
 
 
 
-    // Errors :
     errorRegister: "Error Registering User !",
     errorLogin: "Error Logging In User !",
     errorVerifying: "Error Verifying Email !",

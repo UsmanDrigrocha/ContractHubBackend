@@ -10,13 +10,14 @@ const jwt = require('jsonwebtoken');
 
 const multer = require('multer');
 
-const path = require('path'); 
+const path = require('path');
 
 const mail = require('../utils/sendMail');
 
 const companyModel = require('../models/user/companyModel');
 
 const folderModel = require('../models/user/folderModel');
+const documentModel = require('../models/user/documentModel');
 
 const { TokenExpiredError } = jwt;
 
@@ -613,11 +614,11 @@ const saveDocumentToServer = async (req, res) => {
             if (err instanceof multer.MulterError) {
                 return res.status(rc.BAD_REQUEST).json({ Message: rm.multerError, error: err.message });
             } else if (err) {
-                return res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorUploadingDocument , Error:err.message});
+                return res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorUploadingDocument, Error: err.message });
             }
 
             if (!req?.file) {
-                return res.status(rc.BAD_REQUEST).json({ Message:rm.enterAllFields });
+                return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
             }
 
             const fileType = req.file.mimetype;
@@ -632,8 +633,36 @@ const saveDocumentToServer = async (req, res) => {
     }
 };
 
-// ------------------------------------ ---- --------------------------------------
-
+// ------------------------------------ Create Document --------------------------------------
+const createDocument = async (req, res) => {
+    try {
+        const { userID } = req.user;
+        const docOwner = userID;
+        const { docFolder, docURL, docName, receiver } = req.body;
+        if (!docFolder || !docURL || !docName || !receiver) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields })
+        }
+        const newDoc = new documentModel({
+            docFolder,
+            docURL,
+            docName,
+            receiver,
+            docOwner
+        })
+        await newDoc.save();
+        res.status(rc.CREATED).json({ Message: rm.docCreatedSuccessfully, Doc: newDoc })
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorCreatingDocument, Error: error.message })
+    }
+}
+// ------------------------------------ Create All Document --------------------------------------
+const getAllDocuments = async (req, res) => {
+    try {
+        res.send('...')
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs })
+    }
+}
 
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
@@ -651,5 +680,9 @@ module.exports = {
     createFolder,
     getAllFolders,
     deleteFolder,
-    saveDocumentToServer
+    saveDocumentToServer,
+    createDocument,
+    getAllDocuments,
 }
+
+//

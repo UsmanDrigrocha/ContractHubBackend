@@ -308,6 +308,67 @@
         }
       }
     },
+    "/api/user/saveDocumentToServer": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/user/createDocument": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "docFolder": {
+                  "example": "any"
+                },
+                "docURL": {
+                  "example": "any"
+                },
+                "docName": {
+                  "example": "any"
+                },
+                "receiver": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/api/user/getAllTeamMembers": {
       "get": {
         "description": "",
@@ -377,8 +438,8 @@
         }
       }
     },
-    "/api/user/saveDocumentToServer": {
-      "post": {
+    "/api/user/getAllDocuments": {
+      "get": {
         "description": "",
         "parameters": [
           {
@@ -388,6 +449,9 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK"
+          },
           "401": {
             "description": "Unauthorized"
           },
