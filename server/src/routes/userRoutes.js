@@ -3,7 +3,7 @@ const express = require('express');
 const route = express.Router();
 
 
-const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers, changeCompanyStatus, getUserCompanies, createFolder, getAllFolders, deleteFolder, saveDocumentToServer, createDocument, getAllDocuments, firstVisit, updateUserName } = require('../controllers/userController');
+const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers, changeCompanyStatus, getUserCompanies, createFolder, getAllFolders, deleteFolder, saveDocumentToServer, createDocument, getAllDocuments, firstVisit, updateUserName, sendContract } = require('../controllers/userController');
 const { validateToken } = require('../middlewares/validateToken');
 
 // User Auth Routes
@@ -21,6 +21,8 @@ route.post('/createFolder',validateToken,createFolder)
 route.post('/saveDocumentToServer',validateToken,saveDocumentToServer)
 route.post('/createDocument',validateToken,createDocument)
 route.post('/updateFirstVist',validateToken,firstVisit)
+route.post('/sendContract',validateToken,sendContract)
+
 
 // Secure Get Routes
 route.get('/getAllTeamMembers', validateToken, getAllTeamMembers);

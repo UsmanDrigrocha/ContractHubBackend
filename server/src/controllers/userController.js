@@ -21,6 +21,8 @@ const documentModel = require('../models/user/documentModel');
 
 const { TokenExpiredError } = jwt;
 
+require('dotenv').config();
+
 // ------------------------------------ Register/SignUp --------------------------------------
 const register = async (req, res) => {
     try {
@@ -692,25 +694,102 @@ const getAllDocuments = async (req, res) => {
 // ------------------------------------ Send Contract --------------------------------------
 const sendContract = async (req, res) => {
     try {
+        const { userID } = req.user;
+        const { email ,documentId} = req.body;
+        if (!email || !documentId) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+        }
+        const validateAdmin = await companyModel.findOne({
+            $or: [
+                { 'companyOwner.userID': userID }, // Check if the user is the company owner
+                { 'team': { $elemMatch: { 'userID': userID, 'role': 'admin' } } } // Check if the user is an admin in the team
+            ]
+        });
+        if (!validateAdmin) {
+            return res.status(rc.UNAUTHORIZED).json({ Message: rm.userNotFound })
+        }
+        const emailSent = await mail(
+            email,
+            `Contract Notification`,
+            "Contract Details",
+            `<!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>Contract Notification</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        margin: 0;
+                        padding: 0;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+                        background-color: #f4f4f4;
+                    }
+        
+                    .contract-container {
+                        text-align: center;
+                    }
+        
+                    h1 {
+                        font-size: 28px;
+                        color: #333;
+                        margin-bottom: 20px;
+                    }
+        
+                    #document-id {
+                        color: #e74c3c; /* Red color for the Document ID */
+                        font-weight: bold;
+                        font-size: 24px;
+                    }
+        
+                    .button-container {
+                        margin-top: 20px;
+                    }
+        
+                    .action-button {
+                        padding: 10px 20px;
+                        background-color: #e74c3c;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 5px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="contract-container">
+                    <h1>Contract Notification</h1>
+                    <p>Your contract is ready. Click the button below to view:</p>
+                    <div class="button-container">
+                    <p>File Name ${documentId}</p>
+                        <a href="${process.env.CONTRACT_LINK}/${documentId}" class="action-button">View Contract</a>
+                    </div>
+                </div>
+            </body>
+            </html>`
+        );
 
+        res.status(rc.OK).json({ Email: emailSent })
     } catch (error) {
-        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: errorSendingContract })
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorSendingContract, Error: error.message })
     }
 }
 // ------------------------------------ Update Name--------------------------------------
 const updateUserName = async (req, res) => {
     const { userID } = req.user;
-    const {name}=req.body;
-    if(!name){
-        return res.status(rc.BAD_REQUEST).json({Message:rm.enterAllFields});
+    const { name } = req.body;
+    if (!name) {
+        return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
     }
-    const findUser = await userModel.findOne({_id:userID , isDeleted:false});
-    if(!findUser){
-        return res.status(rc.BAD_REQUEST).json({Message:rm.userNotFound});
+    const findUser = await userModel.findOne({ _id: userID, isDeleted: false });
+    if (!findUser) {
+        return res.status(rc.BAD_REQUEST).json({ Message: rm.userNotFound });
     }
-    findUser.name=name;
+    findUser.name = name;
     await findUser.save();
-    res.status(rc.OK).json({Message:rm.usereNameUpdatedSuccessfully})
+    res.status(rc.OK).json({ Message: rm.usereNameUpdatedSuccessfully })
 }
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
