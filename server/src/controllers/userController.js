@@ -653,7 +653,7 @@ const createDocument = async (req, res) => {
     try {
         const { userID } = req.user;
         let docsOwner = userID;
-        const { docFolder, docURL, docName, receiver } = req.body;
+        const { docFolder, docURL, docName } = req.body;
         if (!docFolder || !docURL || !docName) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields })
         }
@@ -665,7 +665,6 @@ const createDocument = async (req, res) => {
             docOwner: []
         });
         newDoc.docOwner.push(docsOwner);
-        // newDoc.receiver.push(receiver)
         await newDoc.save();
         res.status(rc.CREATED).json({ Message: rm.docCreatedSuccessfully, Doc: newDoc })
     } catch (error) {
@@ -682,16 +681,37 @@ const getAllDocuments = async (req, res) => {
                 { receiver: { $in: [userID] } } // Check if userID is in receiver array
             ]
         });
-        if(!foundDocuments){
-            return res.status(rc.BAD_REQUEST).json({Message:rm.docsNotfound})
+        if (!foundDocuments) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound })
         }
-        res.status(rc.OK).json({Message:rm.docsNotfound, Documents : foundDocuments})
-        // if()
+        res.status(rc.OK).json({ Message: rm.docsNotfound, Documents: foundDocuments })
     } catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs })
     }
 }
+// ------------------------------------ Send Contract --------------------------------------
+const sendContract = async (req, res) => {
+    try {
 
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: errorSendingContract })
+    }
+}
+// ------------------------------------ Update Name--------------------------------------
+const updateUserName = async (req, res) => {
+    const { userID } = req.user;
+    const {name}=req.body;
+    if(!name){
+        return res.status(rc.BAD_REQUEST).json({Message:rm.enterAllFields});
+    }
+    const findUser = await userModel.findOne({_id:userID , isDeleted:false});
+    if(!findUser){
+        return res.status(rc.BAD_REQUEST).json({Message:rm.userNotFound});
+    }
+    findUser.name=name;
+    await findUser.save();
+    res.status(rc.OK).json({Message:rm.usereNameUpdatedSuccessfully})
+}
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
     register,
@@ -711,7 +731,9 @@ module.exports = {
     saveDocumentToServer,
     createDocument,
     getAllDocuments,
-    firstVisit
+    firstVisit,
+    updateUserName,
+    sendContract
 }
 
 //

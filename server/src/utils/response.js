@@ -50,7 +50,8 @@ const responseMessages = {
     userNotFound:"User Not Found !",
     docsNotfound:"Document Not Found !",
     docsNotfound:"Documents Found !",
-
+    errorSendingContract:"Error Sending Contract !",
+    usereNameUpdatedSuccessfully:"Name Updated Successfully !",
 
 
     errorRegister: "Error Registering User !",
