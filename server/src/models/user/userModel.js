@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
     //     expiredAt: { type: Date, default: null }
     // },
     role: { type: String, default: "user" },
+    firstVisit: { type: Boolean, default: false },
     tokenVersion: { type: String, default: null }
 }, { timestamps: true });
 

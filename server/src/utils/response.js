@@ -45,7 +45,9 @@ const responseMessages = {
     errorCreatingDocument:"Error Creating Document !",
     docCreatedSuccessfully:"Document Created Successfully !",
     errorGettingDocs:"Error Getting Documents !",
-
+    errorInFirstVisit:"Error Updating First Visit Status !",
+    userFound:"User Found Successfully !",
+    userNotFound:"User Not Found !",
 
 
 

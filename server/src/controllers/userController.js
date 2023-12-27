@@ -632,6 +632,21 @@ const saveDocumentToServer = async (req, res) => {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ message: rm.errorUploadingDocument });
     }
 };
+// ------------------------------------ First Visit --------------------------------------
+const firstVisit = async (req, res) => {
+    try {
+        const {userID}=req.user;
+        const findUser = await userModel.findOne({ _id: userID, isDeleted: false });
+        if (!findUser) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.userNotFound })
+        }
+        findUser.firstVisit=true;
+        await findUser.save();
+        res.status(rc.OK).json({ Message: rm.userFound, First_Visit: findUser.firstVisit });
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorInFirstVisit })
+    }
+}
 
 // ------------------------------------ Create Document --------------------------------------
 const createDocument = async (req, res) => {
@@ -639,7 +654,7 @@ const createDocument = async (req, res) => {
         const { userID } = req.user;
         let docsOwner = userID;
         const { docFolder, docURL, docName, receiver } = req.body;
-        if (!docFolder || !docURL || !docName || !receiver) {
+        if (!docFolder || !docURL || !docName) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields })
         }
         const newDoc = new documentModel({
@@ -650,7 +665,7 @@ const createDocument = async (req, res) => {
             docOwner: []
         });
         newDoc.docOwner.push(docsOwner);
-        newDoc.receiver.push(receiver)
+        // newDoc.receiver.push(receiver)
         await newDoc.save();
         res.status(rc.CREATED).json({ Message: rm.docCreatedSuccessfully, Doc: newDoc })
     } catch (error) {
@@ -686,6 +701,7 @@ module.exports = {
     saveDocumentToServer,
     createDocument,
     getAllDocuments,
+    firstVisit
 }
 
 //
