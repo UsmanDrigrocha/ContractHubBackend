@@ -635,12 +635,12 @@ const saveDocumentToServer = async (req, res) => {
 // ------------------------------------ First Visit --------------------------------------
 const firstVisit = async (req, res) => {
     try {
-        const {userID}=req.user;
+        const { userID } = req.user;
         const findUser = await userModel.findOne({ _id: userID, isDeleted: false });
         if (!findUser) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.userNotFound })
         }
-        findUser.firstVisit=true;
+        findUser.firstVisit = true;
         await findUser.save();
         res.status(rc.OK).json({ Message: rm.userFound, First_Visit: findUser.firstVisit });
     } catch (error) {
@@ -675,8 +675,18 @@ const createDocument = async (req, res) => {
 // ------------------------------------ Create All Document --------------------------------------
 const getAllDocuments = async (req, res) => {
     try {
-        const { userID } = req.body;
-        // const findAllDocuments = 
+        const { userID } = req.user;
+        const foundDocuments = await documentModel.find({
+            $or: [
+                { docOwner: { $in: [userID] } }, // Check if userID is in docOwner array
+                { receiver: { $in: [userID] } } // Check if userID is in receiver array
+            ]
+        });
+        if(!foundDocuments){
+            return res.status(rc.BAD_REQUEST).json({Message:rm.docsNotfound})
+        }
+        res.status(rc.OK).json({Message:rm.docsNotfound, Documents : foundDocuments})
+        // if()
     } catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs })
     }

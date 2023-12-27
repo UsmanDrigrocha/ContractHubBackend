@@ -48,6 +48,8 @@ const responseMessages = {
     errorInFirstVisit:"Error Updating First Visit Status !",
     userFound:"User Found Successfully !",
     userNotFound:"User Not Found !",
+    docsNotfound:"Document Not Found !",
+    docsNotfound:"Documents Found !",
 
 
 
