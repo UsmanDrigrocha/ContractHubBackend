@@ -5,7 +5,7 @@ const doc = {
         title:"Contract HUB",
         description:"Contract HUB : Webiste Backend"
     },
-    host:"http://localhost:9090",
+    host:"localhost:9090",
     schemes:['http']
 }
 
