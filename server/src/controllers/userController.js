@@ -329,7 +329,7 @@ const verifyResetPasswordLink = async (req, res) => {
 // ------------------------------------ Create Company --------------------------------------
 const createCompany = async (req, res) => {
     try {
-        const { compName, compEmail, team, compAddress, compPhone } = req.body;
+        const { compName, compEmail, team, compAddress, compPhone, compTimzeZone, companyForm } = req.body;
         const { userID } = req.user;
 
         if (compEmail.includes(' ')) {
@@ -344,7 +344,9 @@ const createCompany = async (req, res) => {
             compEmail,
             compAddress,
             compPhone,
-            team: []
+            team: [],
+            compTimzeZone,
+            companyForm
         });
 
         const findCompany = await companyModel.findOne({ compEmail });
@@ -796,7 +798,7 @@ const updateUserName = async (req, res) => {
 const addUserTimeZone = async (req, res) => {
     try {
         const { userID } = req.user;
-        const { timeZone , address} = req.body;
+        const { timeZone, address } = req.body;
         if (!timeZone || !address) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
@@ -805,9 +807,9 @@ const addUserTimeZone = async (req, res) => {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.notRegistered });
         }
         findUser.timeZone = timeZone;
-        findUser.address=address;
+        findUser.address = address;
         await findUser.save();
-        res.status(rc.OK).json({Message:rm.timeZoneSuccess , User:findUser})
+        res.status(rc.OK).json({ Message: rm.timeZoneSuccess, User: findUser })
     } catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorAddingTimeNaddress, Error: error.message })
     }

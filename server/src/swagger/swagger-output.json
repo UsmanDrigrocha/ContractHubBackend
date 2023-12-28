@@ -179,6 +179,12 @@
                 },
                 "compPhone": {
                   "example": "any"
+                },
+                "compTimzeZone": {
+                  "example": "any"
+                },
+                "companyForm": {
+                  "example": "any"
                 }
               }
             }
