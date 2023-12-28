@@ -695,7 +695,7 @@ const getAllDocuments = async (req, res) => {
 const sendContract = async (req, res) => {
     try {
         const { userID } = req.user;
-        const { email ,documentId} = req.body;
+        const { email, documentId } = req.body;
         if (!email || !documentId) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
@@ -791,6 +791,28 @@ const updateUserName = async (req, res) => {
     await findUser.save();
     res.status(rc.OK).json({ Message: rm.usereNameUpdatedSuccessfully })
 }
+// ------------------------------------ Update Name--------------------------------------
+
+const addUserTimeZone = async (req, res) => {
+    try {
+        const { userID } = req.user;
+        const { timeZone , address} = req.body;
+        if (!timeZone || !address) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+        }
+        const findUser = await userModel.findOne({ _id: userID, isDeleted: false });
+        if (!findUser) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.notRegistered });
+        }
+        findUser.timeZone = timeZone;
+        findUser.address=address;
+        await findUser.save();
+        res.status(rc.OK).json({Message:rm.timeZoneSuccess , User:findUser})
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorAddingTimeNaddress, Error: error.message })
+    }
+}
+
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
     register,
@@ -812,7 +834,8 @@ module.exports = {
     getAllDocuments,
     firstVisit,
     updateUserName,
-    sendContract
+    sendContract,
+    addUserTimeZone
 }
 
 //

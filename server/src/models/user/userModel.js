@@ -15,7 +15,28 @@ const userSchema = new mongoose.Schema({
     // },
     role: { type: String, default: "user" },
     firstVisit: { type: Boolean, default: false },
-    tokenVersion: { type: String, default: null }
+    tokenVersion: { type: String, default: null },
+    timeZone: { type: String, default: null },
+    address:{
+        country: {
+            type: String,
+            default:null
+        },
+        city: {
+            type: String,
+            default:null
+        },
+        zip:
+        {
+            type: String,
+            default:null
+        },
+        state:
+        {
+            type: String,
+            default:null
+        },
+    }
 }, { timestamps: true });
 
 
