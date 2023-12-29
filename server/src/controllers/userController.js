@@ -799,6 +799,7 @@ const sendContract = async (req, res) => {
             </html>`
         );
 
+        
         res.status(rc.OK).json({ Email: emailSent })
     } catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorSendingContract, Error: error.message })

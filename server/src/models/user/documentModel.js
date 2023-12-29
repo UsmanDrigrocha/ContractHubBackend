@@ -12,7 +12,8 @@ const documentSchema = new mongoose.Schema({
         default: "pending",
         enum: ["pending", "completed"]
     },
-    receiver: [{ type: String, required: true }]
+    receiver: [{ type: String, required: true }],
+    status:{type:String , dafault:"pending", enum:["pending", "completed","sended" ]}
 }, { timestamps: true });
 
 module.exports = mongoose.model('Documents', documentSchema);
