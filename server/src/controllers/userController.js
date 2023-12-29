@@ -130,22 +130,22 @@ const register = async (req, res) => {
             { name: 'My To Do', folderOwner: [newUser.id] },
             { name: 'In-Progress', folderOwner: [newUser.id] },
             { name: 'Bin', folderOwner: [newUser.id] }
-          ];
-          
-          const createFolders = async () => {
+        ];
+
+        const createFolders = async () => {
             try {
-              for (const folderData of foldersToCreate) {
-                const newFolder = new folderModel(folderData);
-                const savedFolder = await newFolder.save();
-                console.log(`Folder "${savedFolder.name}" created successfully.`);
-              }
+                for (const folderData of foldersToCreate) {
+                    const newFolder = new folderModel(folderData);
+                    const savedFolder = await newFolder.save();
+                    console.log(`Folder "${savedFolder.name}" created successfully.`);
+                }
             } catch (err) {
-              console.error('Error creating folders:', err);
+                console.error('Error creating folders:', err);
             }
-          };
-          
-          createFolders();
-          
+        };
+
+        createFolders();
+
         res.status(rc.OK).json({ Message: rm.userRegisteredSuccessfully })
     } catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorRegister, Error: error.message });
@@ -185,7 +185,7 @@ const login = async (req, res) => {
         );
 
         console.log(findUser.id);
-       
+
 
         res.status(rc.OK).json({ Message: rm.userLoggedIn, Token: token });
     } catch (error) {
@@ -736,6 +736,13 @@ const sendContract = async (req, res) => {
         if (!validateAdmin) {
             return res.status(rc.UNAUTHORIZED).json({ Message: rm.userNotFound })
         }
+
+        const findDoc = await documentModel.findOne({ _id: documentId });
+        if (!findDoc) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound })
+        }
+
+
         const emailSent = await mail(
             email,
             `Contract Notification`,
@@ -791,16 +798,17 @@ const sendContract = async (req, res) => {
                     <h1>Contract Notification</h1>
                     <p>Your contract is ready. Click the button below to view:</p>
                     <div class="button-container">
-                    <p>File Name ${documentId}</p>
-                        <a href="${process.env.CONTRACT_LINK}/${documentId}" class="action-button">View Contract</a>
+                    <p>File Name ${findDoc.name}</p>
+                        <a href="${process.env.CONTRACT_LINK}/${findDoc.docURL}" class="action-button">View Contract</a>
                     </div>
                 </div>
             </body>
             </html>`
         );
 
-        
-        res.status(rc.OK).json({ Email: emailSent })
+        findDoc.status = "sent";
+        await findDoc.save();
+        res.status(rc.OK).json({ Contract_Sent: emailSent })
     } catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorSendingContract, Error: error.message })
     }
