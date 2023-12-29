@@ -910,8 +910,8 @@ const getAllTemplates = async (req, res) => {
         if (!req.body.company) {
             return res.status(rc.BAD_REQUEST).json({ Message: "It is individual !" })
         }
-        console.log(req.body.company)
-        res.send('Comapny')
+        console.log(req.body.company);
+        res.send('underprogress')
     } catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingTempaltes })
     }
