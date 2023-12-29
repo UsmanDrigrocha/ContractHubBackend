@@ -53,16 +53,16 @@ const responseMessages = {
     errorSendingContract: "Error Sending Contract !",
     usereNameUpdatedSuccessfully: "Name Updated Successfully !",
     errorAddingTimeNaddress: "Error Adding timezone !",
-    timeZoneSuccess:"Successfully Added Timezone !",
-
+    timeZoneSuccess: "Successfully Added Timezone !",
+    errorCompletingContract: "Error Completing Contract !",
     errorRegister: "Error Registering User !",
     errorLogin: "Error Logging In User !",
     errorVerifying: "Error Verifying Email !",
     errorVerifyingResetLink: "Error Verifying Reset Link !",
     errorCreatingCompany: "Error Creating Company !",
     errorAddingTeamMember: "Error Adding Team Member !",
-    errorRemovingTeamMember: "Error Removing Team Member !"
-
+    errorRemovingTeamMember: "Error Removing Team Member !",
+    contractCompleted: "Comtract Completed Successfully !",
 }
 
 module.exports = {

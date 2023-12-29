@@ -850,6 +850,25 @@ const addUserTimeZone = async (req, res) => {
     }
 }
 
+// ------------------------------------ Contract Completed--------------------------------------
+const contractCompleted=async(req,res)=>{
+    try {
+        const {docID}=req.body;
+        if(!docID){
+            return res.status(rc.BAD_REQUEST).json({Message:rm.enterAllFields});
+        }
+        const findDoc=await documentModel.findOne({_id:docID});
+        if(!findDoc){
+            return res.status(rc.BAD_REQUEST).json({Message:rm.docsNotfound});
+        }
+        findDoc.isSigned=true;
+        findDoc.status="completed";
+        await findDoc.save();
+        res.status(rc.OK).json({Message:rm.contractCompleted})
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({Message:rm.errorCompletingContract})
+    }
+}
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
     register,
@@ -872,7 +891,8 @@ module.exports = {
     firstVisit,
     updateUserName,
     sendContract,
-    addUserTimeZone
+    addUserTimeZone,
+    contractCompleted
 }
 
 //
