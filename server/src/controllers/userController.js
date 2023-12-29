@@ -20,7 +20,7 @@ const folderModel = require('../models/user/folderModel');
 
 const documentModel = require('../models/user/documentModel');
 
-const templateModel=require('../models/user/templateModel');
+const templateModel = require('../models/user/templateModel');
 
 const { TokenExpiredError } = jwt;
 
@@ -854,51 +854,66 @@ const addUserTimeZone = async (req, res) => {
 }
 
 // ------------------------------------ Contract Completed--------------------------------------
-const contractCompleted=async(req,res)=>{
+const contractCompleted = async (req, res) => {
     try {
-        const {docID}=req.body;
-        if(!docID){
-            return res.status(rc.BAD_REQUEST).json({Message:rm.enterAllFields});
+        const { docID } = req.body;
+        if (!docID) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
-        const findDoc=await documentModel.findOne({_id:docID});
-        if(!findDoc){
-            return res.status(rc.BAD_REQUEST).json({Message:rm.docsNotfound});
+        const findDoc = await documentModel.findOne({ _id: docID });
+        if (!findDoc) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound });
         }
-        findDoc.isSigned=true;
-        findDoc.status="completed";
+        findDoc.isSigned = true;
+        findDoc.status = "completed";
         await findDoc.save();
-        res.status(rc.OK).json({Message:rm.contractCompleted})
+        res.status(rc.OK).json({ Message: rm.contractCompleted })
     } catch (error) {
-        res.status(rc.INTERNAL_SERVER_ERROR).json({Message:rm.errorCompletingContract})
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorCompletingContract })
     }
 }
 
 // ------------------------------------ Create Template --------------------------------------
-const createTemplate = async(req,res)=>{
+const createTemplate = async (req, res) => {
     try {
-        const {userID}=req.user;
-        const {tempName , docURL , company , receiver}=req.body;
-        if(!tempName || !docURL ){
-            return res.status(rc.BAD_REQUEST).json({Message:rm.enterAllFields});
+        const { userID } = req.user;
+        const { tempName, docURL, company, receiver } = req.body;
+        if (!tempName || !docURL) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
-        const findUser = await userModel.findOne({_id:userID , isDeleted:false});
-        if(!findUser){
-            return res.status(rc.BAD_REQUEST).json({Message:rm.userNotFound});
+        const findUser = await userModel.findOne({ _id: userID, isDeleted: false });
+        if (!findUser) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.userNotFound });
         }
-        const newTemplate= new templateModel({
+        const newTemplate = new templateModel({
             tempName,
-            uploadedBy:userID,
+            uploadedBy: userID,
             docURL
         });
-        if(company){
-            newTemplate.company=company;
+        if (company) {
+            newTemplate.company = company;
         }
-        if(receiver){
-            newTemplate.receiver=receiver;
+        if (receiver) {
+            newTemplate.receiver = receiver;
         }
-        res.status(rc.OK).json({Message:rm.templateCreated , Template:newTemplate});
+        await newTemplate.save();
+        res.status(rc.OK).json({ Message: rm.templateCreated, Template: newTemplate });
     } catch (error) {
-        res.status(rc.INTERNAL_SERVER_ERROR).json({Message:rm.errorCreatingTemplate});
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorCreatingTemplate });
+    }
+}
+
+// ------------------------------------ Get All Templates --------------------------------------
+const getAllTemplates = async (req, res) => {
+    try {
+        const { userID } = req.user;
+        if (!req.body.company) {
+            return res.status(rc.BAD_REQUEST).json({ Message: "It is individual !" })
+        }
+        console.log(req.body.company)
+        res.send('Comapny')
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingTempaltes })
     }
 }
 // ------------------------------------ Exports --------------------------------------
@@ -926,4 +941,5 @@ module.exports = {
     addUserTimeZone,
     contractCompleted,
     createTemplate,
+    getAllTemplates,
 }
