@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
     compName: { type: String, required: true },
     compEmail: { type: String, required: true, unique: true },
     compTimzeZone: { type: String, default: null },
-    companyForm: { type: String, default: null, enum: ['llc', 'corporate', 'partnership', 'soleProprietorship', 'nonProfit', 'cooperative', 'franchise', 'other'] },
+    companyForm: { type: String, default: null, },
     companyOwner: {
         userID: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
         role: { type: String, default: "Super Admin" }
