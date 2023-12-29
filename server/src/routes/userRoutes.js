@@ -31,7 +31,7 @@ route.get('/getAllTeamMembers', validateToken, getAllTeamMembers);
 route.get('/getUserCompanies',validateToken,getUserCompanies);
 route.get('/getAllFolders',validateToken,getAllFolders)
 route.get('/getAllDocuments',validateToken,getAllDocuments)
-route.get('/getAllTemplates',validateToken , getAllTemplates)
+route.get('/getAllTemplates/:id',validateToken , getAllTemplates)
 
 // Secure Delete Routes
 route.delete('/deleteTeamMember/:id', validateToken, removeTeamMember);

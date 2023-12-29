@@ -4,7 +4,7 @@ const templateSchema = new mongoose.Schema({
     tempName: { type: String, required: true },
     uploadedBy: { type:String, required: true },
     receiver: [{ type: String, required: true }],
-    company:{type:String , default:null},
+    company:{type:String , default:''},
     docURL:{type:String , default:null},
 }, { timestamps: true });
 

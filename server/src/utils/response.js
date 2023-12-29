@@ -66,6 +66,7 @@ const responseMessages = {
     errorCreatingTemplate:"Error Creating Template !",
     templateCreated:"Template Created Successfully !",
     errorGettingTempaltes:"Error Getting Templates",
+    templatesFetched:"Templates Fetched Successfully !"
 }
 
 module.exports = {

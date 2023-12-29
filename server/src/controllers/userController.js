@@ -907,13 +907,15 @@ const createTemplate = async (req, res) => {
 const getAllTemplates = async (req, res) => {
     try {
         const { userID } = req.user;
-        if (!req.body.company) {
-            return res.status(rc.BAD_REQUEST).json({ Message: "It is individual !" })
+        const {id}=req.params;
+        if (id === 'null') {
+            const companyTemplates = await templateModel.find({ company: id });
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.templatesFetched, Company_Template: companyTemplates });
         }
-        console.log(req.body.company);
-        res.send('underprogress')
+        const getAllTemplates = await templateModel.find({ uploadedBy: userID });
+        res.status(rc.OK).json({ Message: rm.templatesFetched, Templates: getAllTemplates })
     } catch (error) {
-        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingTempaltes })
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingTempaltes , Error:error.message })
     }
 }
 // ------------------------------------ Exports --------------------------------------
