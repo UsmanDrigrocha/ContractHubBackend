@@ -123,6 +123,29 @@ const register = async (req, res) => {
             </body>
             </html>`
         );
+        console.log(newUser.id);
+        const foldersToCreate = [
+            { name: 'All', folderOwner: [newUser.id] },
+            { name: 'Completed', folderOwner: [newUser.id] },
+            { name: 'My To Do', folderOwner: [newUser.id] },
+            { name: 'In-Progress', folderOwner: [newUser.id] },
+            { name: 'Bin', folderOwner: [newUser.id] }
+          ];
+          
+          const createFolders = async () => {
+            try {
+              for (const folderData of foldersToCreate) {
+                const newFolder = new folderModel(folderData);
+                const savedFolder = await newFolder.save();
+                console.log(`Folder "${savedFolder.name}" created successfully.`);
+              }
+            } catch (err) {
+              console.error('Error creating folders:', err);
+            }
+          };
+          
+          createFolders();
+          
         res.status(rc.OK).json({ Message: rm.userRegisteredSuccessfully })
     } catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorRegister, Error: error.message });
@@ -160,6 +183,9 @@ const login = async (req, res) => {
             process.env.JWT_SECRET_KEY,
             { expiresIn: '4d' }
         );
+
+        console.log(findUser.id);
+       
 
         res.status(rc.OK).json({ Message: rm.userLoggedIn, Token: token });
     } catch (error) {
