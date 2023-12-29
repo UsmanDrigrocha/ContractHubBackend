@@ -798,7 +798,7 @@ const sendContract = async (req, res) => {
                     <h1>Contract Notification</h1>
                     <p>Your contract is ready. Click the button below to view:</p>
                     <div class="button-container">
-                    <p>File Name ${findDoc.name}</p>
+                    <p>File Name ${findDoc.docName}</p>
                         <a href="${process.env.CONTRACT_LINK}/${findDoc.docURL}" class="action-button">View Contract</a>
                     </div>
                 </div>
