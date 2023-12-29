@@ -63,6 +63,8 @@ const responseMessages = {
     errorAddingTeamMember: "Error Adding Team Member !",
     errorRemovingTeamMember: "Error Removing Team Member !",
     contractCompleted: "Comtract Completed Successfully !",
+    errorCreatingTemplate:"Error Creating Template !",
+    templateCreated:"Template Created Successfully !",
 }
 
 module.exports = {

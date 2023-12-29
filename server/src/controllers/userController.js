@@ -17,7 +17,10 @@ const mail = require('../utils/sendMail');
 const companyModel = require('../models/user/companyModel');
 
 const folderModel = require('../models/user/folderModel');
+
 const documentModel = require('../models/user/documentModel');
+
+const templateModel=require('../models/user/templateModel');
 
 const { TokenExpiredError } = jwt;
 
@@ -869,6 +872,35 @@ const contractCompleted=async(req,res)=>{
         res.status(rc.INTERNAL_SERVER_ERROR).json({Message:rm.errorCompletingContract})
     }
 }
+
+// ------------------------------------ Create Template --------------------------------------
+const createTemplate = async(req,res)=>{
+    try {
+        const {userID}=req.user;
+        const {tempName , docURL , company , receiver}=req.body;
+        if(!tempName || !docURL ){
+            return res.status(rc.BAD_REQUEST).json({Message:rm.enterAllFields});
+        }
+        const findUser = await userModel.findOne({_id:userID , isDeleted:false});
+        if(!findUser){
+            return res.status(rc.BAD_REQUEST).json({Message:rm.userNotFound});
+        }
+        const newTemplate= new templateModel({
+            tempName,
+            uploadedBy:userID,
+            docURL
+        });
+        if(company){
+            newTemplate.company=company;
+        }
+        if(receiver){
+            newTemplate.receiver=receiver;
+        }
+        res.status(rc.OK).json({Message:rm.templateCreated , Template:newTemplate});
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({Message:rm.errorCreatingTemplate});
+    }
+}
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
     register,
@@ -892,7 +924,6 @@ module.exports = {
     updateUserName,
     sendContract,
     addUserTimeZone,
-    contractCompleted
+    contractCompleted,
+    createTemplate,
 }
-
-//
