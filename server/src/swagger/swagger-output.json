@@ -349,6 +349,9 @@
             "schema": {
               "type": "object",
               "properties": {
+                "receiver": {
+                  "example": "any"
+                },
                 "docFolder": {
                   "example": "any"
                 },
@@ -407,9 +410,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "email": {
-                  "example": "any"
-                },
                 "documentId": {
                   "example": "any"
                 }

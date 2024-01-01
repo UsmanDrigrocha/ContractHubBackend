@@ -866,7 +866,6 @@ const sendContract = async (req, res) => {
         if (!findDoc.receiver || findDoc.receiver.length === 0) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.noReceiver });
         }
-        console.log(findDoc)
 
         let receiverIds = [];
 
@@ -878,9 +877,6 @@ const sendContract = async (req, res) => {
 
 
         const findUsers = await userModel.find({ _id: { $in: receiverIds } });
-        console.log('Receiver IDs:', receiverIds);
-        console.log('Users Found:', findUsers);
-
         if (!findUsers || findUsers.length === 0) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.userNotFound });
         }
