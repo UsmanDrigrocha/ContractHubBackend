@@ -904,20 +904,36 @@ const createTemplate = async (req, res) => {
 }
 
 // ------------------------------------ Get All Templates --------------------------------------
-const getAllTemplates = async (req, res) => {
+// Route for fetching user-specific templates
+const getUserTemplates = async (req, res) => {
     try {
         const { userID } = req.user;
-        const {id}=req.params;
-        if (id === 'null') {
-            const companyTemplates = await templateModel.find({ company: id });
-            return res.status(rc.BAD_REQUEST).json({ Message: rm.templatesFetched, Company_Template: companyTemplates });
-        }
-        const getAllTemplates = await templateModel.find({ uploadedBy: userID });
-        res.status(rc.OK).json({ Message: rm.templatesFetched, Templates: getAllTemplates })
+        console.log(userID)
+        const userTemplates = await templateModel.find({ uploadedBy: userID });
+        res.status(rc.OK).json({ Message: rm.templatesFetched, User_Templates: userTemplates });
     } catch (error) {
-        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingTempaltes , Error:error.message })
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingTemplates, Error: error.message });
     }
 }
+
+// Route for fetching company templates
+const getCompanyTemplates = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (id === 'null') {
+            const companyTemplates = await templateModel.find({ company: null });
+            return res.status(rc.OK).json({ Message: rm.templatesFetched, Company_Templates: companyTemplates });
+        }
+        
+        const companyTemplates = await templateModel.find({ company: id });
+        res.status(rc.OK).json({ Message: rm.templatesFetched, Company_Templates: companyTemplates });
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingTemplates, Error: error.message });
+    }
+}
+
+
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
     register,
@@ -943,5 +959,6 @@ module.exports = {
     addUserTimeZone,
     contractCompleted,
     createTemplate,
-    getAllTemplates,
+    getUserTemplates,
+    getCompanyTemplates,
 }
