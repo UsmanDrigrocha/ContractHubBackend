@@ -9,8 +9,7 @@ const documentSchema = new mongoose.Schema({
     status: {
         type: String,
         required: true,
-        default: "pending",
-        enum: ["pending", "completed"]
+        default: "pending"
     },
     receiver: [{ type: String, required: true }],
     status: { type: String, dafault: "pending", enum: ["pending", "completed", "sent"] }

@@ -874,6 +874,10 @@ const contractCompleted = async (req, res) => {
         }
         findDoc.isSigned = true;
         findDoc.status = "completed";
+        const findCompleted = await folderModel.findOne({ name: "Completed" });
+        if (findCompleted) {
+            findDoc.docFolder = findCompleted._id;
+        }
         await findDoc.save();
         res.status(rc.OK).json({ Message: rm.contractCompleted })
     } catch (error) {
