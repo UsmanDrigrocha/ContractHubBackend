@@ -65,7 +65,7 @@ const responseMessages = {
     contractCompleted: "Comtract Completed Successfully !",
     errorCreatingTemplate:"Error Creating Template !",
     templateCreated:"Template Created Successfully !",
-    errorGettingTempaltes:"Error Getting Templates",
+    errorGettingTemplates:"Error Getting Templates",
     templatesFetched:"Templates Fetched Successfully !"
 }
 

@@ -865,6 +865,7 @@ const addUserTimeZone = async (req, res) => {
 const contractCompleted = async (req, res) => {
     try {
         const { docID } = req.body;
+        const {userID}=req.user;
         if (!docID) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
@@ -874,7 +875,7 @@ const contractCompleted = async (req, res) => {
         }
         findDoc.isSigned = true;
         findDoc.status = "completed";
-        const findCompleted = await folderModel.findOne({ name: "Completed" });
+        const findCompleted = await folderModel.findOne({ name: "Completed", folderOwner: { $in: [userID] } });
         if (findCompleted) {
             findDoc.docFolder = findCompleted._id;
         }
