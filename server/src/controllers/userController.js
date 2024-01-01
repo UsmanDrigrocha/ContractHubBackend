@@ -687,20 +687,28 @@ const createDocument = async (req, res) => {
         const { userID } = req.user;
         let docsOwner = userID;
         const { docFolder, docURL, docName } = req.body;
-        if (!docFolder || !docURL || !docName) {
+        if (!docURL || !docName) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields })
         }
         const newDoc = new documentModel({
-            docFolder,
             docURL,
             docName,
             receiver: [],
             docOwner: []
         });
-        newDoc.docOwner.push(docsOwner);
+        if (docFolder) {
+            newDoc.docFolder = docFolder;
+        } else {
+            const findPending = await folderModel.findOne({ name: "All" });
+            if (findPending) {
+                newDoc.docFolder = findPending._id;
+            }
+            newDoc.docOwner.push(docsOwner);
+        }
         await newDoc.save();
         res.status(rc.CREATED).json({ Message: rm.docCreatedSuccessfully, Doc: newDoc })
-    } catch (error) {
+    }
+    catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorCreatingDocument, Error: error.message })
     }
 }
@@ -919,12 +927,12 @@ const getUserTemplates = async (req, res) => {
 const getCompanyTemplates = async (req, res) => {
     try {
         const { id } = req.params;
-        
+
         if (id === 'null') {
             const companyTemplates = await templateModel.find({ company: null });
             return res.status(rc.OK).json({ Message: rm.templatesFetched, Company_Templates: companyTemplates });
         }
-        
+
         const companyTemplates = await templateModel.find({ company: id });
         res.status(rc.OK).json({ Message: rm.templatesFetched, Company_Templates: companyTemplates });
     } catch (error) {
