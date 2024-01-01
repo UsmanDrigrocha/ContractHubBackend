@@ -624,7 +624,27 @@
         }
       }
     },
-    "/api/user/getAllTemplates/{id}": {
+    "/api/user/templates": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/user/templates/{id}": {
       "get": {
         "description": "",
         "parameters": [
