@@ -49,7 +49,6 @@ const responseMessages = {
     userFound: "User Found Successfully !",
     userNotFound: "User Not Found !",
     docsNotfound: "Document Not Found !",
-    docsNotfound: "Documents Found !",
     errorSendingContract: "Error Sending Contract !",
     usereNameUpdatedSuccessfully: "Name Updated Successfully !",
     errorAddingTimeNaddress: "Error Adding timezone !",
@@ -66,7 +65,8 @@ const responseMessages = {
     errorCreatingTemplate:"Error Creating Template !",
     templateCreated:"Template Created Successfully !",
     errorGettingTemplates:"Error Getting Templates",
-    templatesFetched:"Templates Fetched Successfully !"
+    templatesFetched:"Templates Fetched Successfully !",
+    noReceiver:"No Receiver",
 }
 
 module.exports = {

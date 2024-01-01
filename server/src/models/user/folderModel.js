@@ -6,10 +6,6 @@ const folderSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         role:{type:String }
     }],
-    documents:[{
-        type:String,
-        default:null
-    }]
 }, { timestamps: true });
 
 

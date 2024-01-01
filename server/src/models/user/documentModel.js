@@ -4,7 +4,7 @@ const documentSchema = new mongoose.Schema({
     docName: { type: String, required: true },
     docURL: { type: String, required: true },
     docOwner: [{ type: mongoose.Schema.Types.ObjectId, required: true }],
-    docFolder: { type: mongoose.Schema.Types.ObjectId },
+    docFolder:[ { type: mongoose.Schema.Types.ObjectId , default:[] }],
     isSigned: { type: Boolean, required: true, default: false },
     status: {
         type: String,

@@ -697,13 +697,16 @@ const createDocument = async (req, res) => {
             docOwner: []
         });
         if (docFolder) {
-            newDoc.docFolder = docFolder;
+            newDoc.docFolder.push(docFolder);
         } else {
             const findPending = await folderModel.findOne({ name: "All" });
             if (findPending) {
                 newDoc.docFolder = findPending._id;
             }
             newDoc.docOwner.push(docsOwner);
+        }
+        if (req.body.receiver) {
+            newDoc.receiver.push(req.body.receiver);
         }
         await newDoc.save();
         res.status(rc.CREATED).json({ Message: rm.docCreatedSuccessfully, Doc: newDoc })
@@ -731,99 +734,232 @@ const getAllDocuments = async (req, res) => {
     }
 }
 // ------------------------------------ Send Contract --------------------------------------
+// const sendContract = async (req, res) => {
+//     try {
+//         const { userID } = req.user;
+//         const {  documentId } = req.body;
+//         if ( !documentId) {
+//             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+//         }
+//         const validateAdmin = await companyModel.findOne({
+//             $or: [
+//                 { 'companyOwner.userID': userID }, // Check if the user is the company owner
+//                 { 'team': { $elemMatch: { 'userID': userID, 'role': 'admin' } } } // Check if the user is an admin in the team
+//             ]
+//         });
+//         if (!validateAdmin) {
+//             return res.status(rc.UNAUTHORIZED).json({ Message: rm.userNotFound })
+//         }
+
+//         const findDoc = await documentModel.findOne({ _id: documentId });
+//         if (!findDoc) {
+//             return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound })
+//         }
+
+//         const receiverIds = findDoc.receiver.map(receiver => receiver._id); // Extracting _id values from the array
+//         console.log(receiverIds)
+//         if(!receiverIds){
+//             return res.status(rc.BAD_REQUEST).json({Message:rm.noReceiver})
+//         }
+//         const findUser = await userModel.find({ _id: { $in: receiverIds } });
+
+//         if(!findUser || !receiverIds || receiverIds.length===0 || receiverIds=== undefined){
+//             return res.status(rc.BAD_REQUEST).json({Message:rm.userNotFound})
+//         }
+//         const emailSent = await mail(
+//             findUser.email,
+//             `Contract Notification`,
+//             "Contract Details",
+//             `<!DOCTYPE html>
+//             <html lang="en">
+//             <head>
+//                 <meta charset="UTF-8">
+//                 <title>Contract Notification</title>
+//                 <style>
+//                     body {
+//                         font-family: Arial, sans-serif;
+//                         margin: 0;
+//                         padding: 0;
+//                         display: flex;
+//                         justify-content: center;
+//                         align-items: center;
+//                         height: 100vh;
+//                         background-color: #f4f4f4;
+//                     }
+
+//                     .contract-container {
+//                         text-align: center;
+//                     }
+
+//                     h1 {
+//                         font-size: 28px;
+//                         color: #333;
+//                         margin-bottom: 20px;
+//                     }
+
+//                     #document-id {
+//                         color: #e74c3c; /* Red color for the Document ID */
+//                         font-weight: bold;
+//                         font-size: 24px;
+//                     }
+
+//                     .button-container {
+//                         margin-top: 20px;
+//                     }
+
+//                     .action-button {
+//                         padding: 10px 20px;
+//                         background-color: #e74c3c;
+//                         color: white;
+//                         text-decoration: none;
+//                         border-radius: 5px;
+//                     }
+//                 </style>
+//             </head>
+//             <body>
+//                 <div class="contract-container">
+//                     <h1>Contract Notification</h1>
+//                     <p>Your contract is ready. Click the button below to view:</p>
+//                     <div class="button-container">
+//                     <p>File Name ${findDoc.docName}</p>
+//                         <a href="${process.env.CONTRACT_LINK}/${findDoc.docURL}" class="action-button">View Contract</a>
+//                     </div>
+//                 </div>
+//             </body>
+//             </html>`
+//         );
+
+//         findDoc.status = "sent";
+//         await findDoc.save();
+//         res.status(rc.OK).json({ Contract_Sent: emailSent })
+//     } catch (error) {
+//         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorSendingContract, Error: error.message })
+//     }
+// }
+
 const sendContract = async (req, res) => {
     try {
         const { userID } = req.user;
-        const { email, documentId } = req.body;
-        if (!email || !documentId) {
+        const { documentId } = req.body;
+
+        if (!documentId) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
+
         const validateAdmin = await companyModel.findOne({
             $or: [
-                { 'companyOwner.userID': userID }, // Check if the user is the company owner
-                { 'team': { $elemMatch: { 'userID': userID, 'role': 'admin' } } } // Check if the user is an admin in the team
+                { 'companyOwner.userID': userID },
+                { 'team': { $elemMatch: { 'userID': userID, 'role': 'admin' } } }
             ]
         });
+
         if (!validateAdmin) {
-            return res.status(rc.UNAUTHORIZED).json({ Message: rm.userNotFound })
+            return res.status(rc.UNAUTHORIZED).json({ Message: rm.userNotFound });
         }
 
         const findDoc = await documentModel.findOne({ _id: documentId });
+
         if (!findDoc) {
-            return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound })
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound });
+        }
+
+        if (!findDoc.receiver || findDoc.receiver.length === 0) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.noReceiver });
+        }
+        console.log(findDoc)
+
+        let receiverIds = [];
+
+        if (Array.isArray(findDoc.receiver)) {
+            receiverIds = findDoc.receiver.filter(id => id); // Remove potential undefined or empty string values
+        } else if (typeof findDoc.receiver === 'string') {
+            receiverIds.push(findDoc.receiver); // Add the single string ID to the array
         }
 
 
-        const emailSent = await mail(
-            email,
-            `Contract Notification`,
-            "Contract Details",
-            `<!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <title>Contract Notification</title>
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        margin: 0;
-                        padding: 0;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        height: 100vh;
-                        background-color: #f4f4f4;
-                    }
-        
-                    .contract-container {
-                        text-align: center;
-                    }
-        
-                    h1 {
-                        font-size: 28px;
-                        color: #333;
-                        margin-bottom: 20px;
-                    }
-        
-                    #document-id {
-                        color: #e74c3c; /* Red color for the Document ID */
-                        font-weight: bold;
-                        font-size: 24px;
-                    }
-        
-                    .button-container {
-                        margin-top: 20px;
-                    }
-        
-                    .action-button {
-                        padding: 10px 20px;
-                        background-color: #e74c3c;
-                        color: white;
-                        text-decoration: none;
-                        border-radius: 5px;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="contract-container">
-                    <h1>Contract Notification</h1>
-                    <p>Your contract is ready. Click the button below to view:</p>
-                    <div class="button-container">
-                    <p>File Name ${findDoc.docName}</p>
-                        <a href="${process.env.CONTRACT_LINK}/${findDoc.docURL}" class="action-button">View Contract</a>
+        const findUsers = await userModel.find({ _id: { $in: receiverIds } });
+        console.log('Receiver IDs:', receiverIds);
+        console.log('Users Found:', findUsers);
+
+        if (!findUsers || findUsers.length === 0) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.userNotFound });
+        }
+
+
+        for (const user of findUsers) {
+            const emailSent = await mail(
+                user.email, // Assuming 'email' is the field storing user emails
+                `Contract Notification`,
+                "Contract Details",
+                `<html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Contract Notification</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            margin: 0;
+                            padding: 0;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 100vh;
+                            background-color: #f4f4f4;
+                        }
+            
+                        .contract-container {
+                            text-align: center;
+                        }
+            
+                        h1 {
+                            font-size: 28px;
+                            color: #333;
+                            margin-bottom: 20px;
+                        }
+            
+                        #document-id {
+                            color: #e74c3c; /* Red color for the Document ID */
+                            font-weight: bold;
+                            font-size: 24px;
+                        }
+            
+                        .button-container {
+                            margin-top: 20px;
+                        }
+            
+                        .action-button {
+                            padding: 10px 20px;
+                            background-color: #e74c3c;
+                            color: white;
+                            text-decoration: none;
+                            border-radius: 5px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="contract-container">
+                        <h1>Contract Notification</h1>
+                        <p>Your contract is ready. Click the button below to view:</p>
+                        <div class="button-container">
+                        <p>File Name ${findDoc.docName}</p>
+                            <a href="${process.env.CONTRACT_LINK}/${findDoc.docURL}" class="action-button">View Contract</a>
+                        </div>
                     </div>
-                </div>
-            </body>
-            </html>`
-        );
+                </body>
+                </html>`
+            );
+
+            // Handle emailSent status here if required
+        }
 
         findDoc.status = "sent";
         await findDoc.save();
-        res.status(rc.OK).json({ Contract_Sent: emailSent })
+        res.status(rc.OK).json({ Contract_Sent: true });
     } catch (error) {
-        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorSendingContract, Error: error.message })
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorSendingContract, Error: error.message });
     }
-}
+};
+
 // ------------------------------------ Update Name--------------------------------------
 const updateUserName = async (req, res) => {
     const { userID } = req.user;
@@ -865,7 +1001,7 @@ const addUserTimeZone = async (req, res) => {
 const contractCompleted = async (req, res) => {
     try {
         const { docID } = req.body;
-        const {userID}=req.user;
+        const { userID } = req.user;
         if (!docID) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
@@ -877,7 +1013,7 @@ const contractCompleted = async (req, res) => {
         findDoc.status = "completed";
         const findCompleted = await folderModel.findOne({ name: "Completed", folderOwner: { $in: [userID] } });
         if (findCompleted) {
-            findDoc.docFolder = findCompleted._id;
+            findDoc.docFolder.pus(findCompleted._id);
         }
         await findDoc.save();
         res.status(rc.OK).json({ Message: rm.contractCompleted })
