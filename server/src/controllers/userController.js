@@ -903,8 +903,7 @@ const createTemplate = async (req, res) => {
     }
 }
 
-// ------------------------------------ Get All Templates --------------------------------------
-// Route for fetching user-specific templates
+// ------------------------------------ Get User Templates --------------------------------------
 const getUserTemplates = async (req, res) => {
     try {
         const { userID } = req.user;
@@ -916,7 +915,7 @@ const getUserTemplates = async (req, res) => {
     }
 }
 
-// Route for fetching company templates
+// ------------------------------------ Get Company Templates --------------------------------------
 const getCompanyTemplates = async (req, res) => {
     try {
         const { id } = req.params;
