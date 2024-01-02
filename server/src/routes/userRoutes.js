@@ -3,7 +3,7 @@ const express = require('express');
 const route = express.Router();
 
 
-const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers, changeCompanyStatus, getUserCompanies, createFolder, getAllFolders, deleteFolder, saveDocumentToServer, createDocument, getAllDocuments, firstVisit, updateUserName, sendContract, addUserTimeZone, contractCompleted, createTemplate, getAllTemplates, getUserTemplates, getCompanyTemplates } = require('../controllers/userController');
+const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers, changeCompanyStatus, getUserCompanies, createFolder, getAllFolders, deleteFolder, saveDocumentToServer, createDocument, getAllDocuments, firstVisit, updateUserName, sendContract, addUserTimeZone, contractCompleted, createTemplate, getAllTemplates, getUserTemplates, getCompanyTemplates, createContact, getAllContacts, deleteContact, updateContact } = require('../controllers/userController');
 const { validateToken } = require('../middlewares/validateToken');
 
 // User Auth Routes
@@ -25,6 +25,7 @@ route.post('/sendContract',validateToken,sendContract)
 route.post('/addUserTimeZone',validateToken,addUserTimeZone)
 route.post('/contractCompleted',validateToken,contractCompleted)
 route.post('/createTemplate',validateToken,createTemplate)
+route.post("/createContact",validateToken,createContact)
 
 // Secure Get Routes
 route.get('/getAllTeamMembers', validateToken, getAllTeamMembers);
@@ -34,14 +35,15 @@ route.get('/getAllDocuments',validateToken,getAllDocuments)
 // route.get('/getAllTemplates/:id',validateToken , getAllTemplates)
 route.get('/templates',validateToken, getUserTemplates);
 route.get('/templates/:id',validateToken, getCompanyTemplates);
-
+route.get('/getAllContacts',validateToken,getAllContacts)
 
 // Secure Delete Routes
 route.delete('/deleteTeamMember/:id', validateToken, removeTeamMember);
 route.delete('/deleteFolder/:folderID',validateToken,deleteFolder)
+route.delete('/deleteContact/:contactID',validateToken,deleteContact)
 
 // Secure Put / Update Routes
 route.put('/updateUserName',validateToken,updateUserName)
-
+route.put('/updateContact/:contactID',validateToken,updateContact)
 // Exporting Route
 module.exports = route;

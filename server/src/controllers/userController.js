@@ -21,6 +21,7 @@ const folderModel = require('../models/user/folderModel');
 const documentModel = require('../models/user/documentModel');
 
 const templateModel = require('../models/user/templateModel');
+const contactModel = require('../models/user/contactModel');
 
 const { TokenExpiredError } = jwt;
 
@@ -734,109 +735,6 @@ const getAllDocuments = async (req, res) => {
     }
 }
 // ------------------------------------ Send Contract --------------------------------------
-// const sendContract = async (req, res) => {
-//     try {
-//         const { userID } = req.user;
-//         const {  documentId } = req.body;
-//         if ( !documentId) {
-//             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
-//         }
-//         const validateAdmin = await companyModel.findOne({
-//             $or: [
-//                 { 'companyOwner.userID': userID }, // Check if the user is the company owner
-//                 { 'team': { $elemMatch: { 'userID': userID, 'role': 'admin' } } } // Check if the user is an admin in the team
-//             ]
-//         });
-//         if (!validateAdmin) {
-//             return res.status(rc.UNAUTHORIZED).json({ Message: rm.userNotFound })
-//         }
-
-//         const findDoc = await documentModel.findOne({ _id: documentId });
-//         if (!findDoc) {
-//             return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound })
-//         }
-
-//         const receiverIds = findDoc.receiver.map(receiver => receiver._id); // Extracting _id values from the array
-//         console.log(receiverIds)
-//         if(!receiverIds){
-//             return res.status(rc.BAD_REQUEST).json({Message:rm.noReceiver})
-//         }
-//         const findUser = await userModel.find({ _id: { $in: receiverIds } });
-
-//         if(!findUser || !receiverIds || receiverIds.length===0 || receiverIds=== undefined){
-//             return res.status(rc.BAD_REQUEST).json({Message:rm.userNotFound})
-//         }
-//         const emailSent = await mail(
-//             findUser.email,
-//             `Contract Notification`,
-//             "Contract Details",
-//             `<!DOCTYPE html>
-//             <html lang="en">
-//             <head>
-//                 <meta charset="UTF-8">
-//                 <title>Contract Notification</title>
-//                 <style>
-//                     body {
-//                         font-family: Arial, sans-serif;
-//                         margin: 0;
-//                         padding: 0;
-//                         display: flex;
-//                         justify-content: center;
-//                         align-items: center;
-//                         height: 100vh;
-//                         background-color: #f4f4f4;
-//                     }
-
-//                     .contract-container {
-//                         text-align: center;
-//                     }
-
-//                     h1 {
-//                         font-size: 28px;
-//                         color: #333;
-//                         margin-bottom: 20px;
-//                     }
-
-//                     #document-id {
-//                         color: #e74c3c; /* Red color for the Document ID */
-//                         font-weight: bold;
-//                         font-size: 24px;
-//                     }
-
-//                     .button-container {
-//                         margin-top: 20px;
-//                     }
-
-//                     .action-button {
-//                         padding: 10px 20px;
-//                         background-color: #e74c3c;
-//                         color: white;
-//                         text-decoration: none;
-//                         border-radius: 5px;
-//                     }
-//                 </style>
-//             </head>
-//             <body>
-//                 <div class="contract-container">
-//                     <h1>Contract Notification</h1>
-//                     <p>Your contract is ready. Click the button below to view:</p>
-//                     <div class="button-container">
-//                     <p>File Name ${findDoc.docName}</p>
-//                         <a href="${process.env.CONTRACT_LINK}/${findDoc.docURL}" class="action-button">View Contract</a>
-//                     </div>
-//                 </div>
-//             </body>
-//             </html>`
-//         );
-
-//         findDoc.status = "sent";
-//         await findDoc.save();
-//         res.status(rc.OK).json({ Contract_Sent: emailSent })
-//     } catch (error) {
-//         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorSendingContract, Error: error.message })
-//     }
-// }
-
 const sendContract = async (req, res) => {
     try {
         const { userID } = req.user;
@@ -1076,7 +974,106 @@ const getCompanyTemplates = async (req, res) => {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingTemplates, Error: error.message });
     }
 }
+// ------------------------------------ Create Contact --------------------------------------
+const createContact = async (req, res) => {
+    try {
+        const { userID } = req.user;
+        const { name, email } = req.body;
+        if (!name || !email) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+        }
 
+        let findContacts = await contactModel.findOne({ userID });
+        if (!findContacts) {
+            findContacts = new contactModel({
+                name,
+                email,
+                userID,
+                contacts: [{ name, email }] // Initialize contacts as an array
+            });
+            await findContacts.save();
+        } else {
+            findContacts.contacts.push({ name, email });
+            await findContacts.save();
+        }
+        res.status(rc.CREATED).json({ Message: rm.contactCreated });
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorCreatingContact, Error: error.message });
+    }
+}
+// ------------------------------------ Delete Contact --------------------------------------
+const deleteContact = async (req, res) => {
+    try {
+        const { userID } = req.user;
+        const contactID = req.params.contactID; // Assuming contactID is passed in the request parameters
+        
+        const findContacts = await contactModel.findOne({ userID });
+        if (!findContacts) {
+            return res.status(rc.NOT_FOUND).json({ Message: rm.contactNotFound });
+        }
+        // Find the index of the contact to remove
+        const contactIndex = findContacts.contacts.find(contact => contact._id.equals(contactID));
+        if (contactIndex === -1) {
+            return res.status(rc.NOT_FOUND).json({ Message: rm.contactNotFound });
+        }
+
+        findContacts.contacts.splice(contactIndex, 1); // Remove the contact
+        await findContacts.save();
+        
+        res.status(rc.OK).json({ Message: rm.contactDeleted });
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorDeletingContact, Error: error.message });
+    }
+}
+// ------------------------------------ Get All Contact --------------------------------------
+
+const getAllContacts = async (req, res) => {
+    try {
+        const { userID } = req.user;
+
+        const findContacts = await contactModel.findOne({ userID });
+        if (!findContacts) {
+            return res.status(rc.NOT_FOUND).json({ Message: rm.noContactsFound });
+        }
+
+        const allContacts = findContacts.contacts;
+        res.status(rc.OK).json({ Contacts: allContacts });
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorFetchingContacts, Error: error.message });
+    }
+}
+// ------------------------------------ Update Contact --------------------------------------
+const updateContact = async (req, res) => {
+    try {
+        const { userID } = req.user;
+        const { name, email } = req.body;
+        const contactID = req.params.contactID; // Assuming contactID is passed in the request parameters
+        console.log(contactID)
+        if (!name || !email) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+        }
+
+        const findContacts = await contactModel.findOne({ userID });
+        if (!findContacts) {
+            return res.status(rc.NOT_FOUND).json({ Message: rm.contactNotFound });
+        }
+        
+        const contactToUpdate = findContacts.contacts.find(contact => contact._id.equals(contactID));
+
+        if (!contactToUpdate) {
+            return res.status(rc.NOT_FOUND).json({ Message: rm.contactNotFound });
+        }
+
+        contactToUpdate.name = name;
+        contactToUpdate.email = email;
+
+        await findContacts.save();
+        
+        res.status(rc.OK).json({ Message: rm.contactUpdated , Contact : contactToUpdate });
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorUpdatingContact, Error: error.message });
+    }
+}
 
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
@@ -1105,4 +1102,8 @@ module.exports = {
     createTemplate,
     getUserTemplates,
     getCompanyTemplates,
+    createContact,
+    getAllContacts,
+    updateContact,
+    deleteContact
 }

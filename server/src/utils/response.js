@@ -67,6 +67,11 @@ const responseMessages = {
     errorGettingTemplates:"Error Getting Templates",
     templatesFetched:"Templates Fetched Successfully !",
     noReceiver:"No Receiver",
+    contactDeleted:"Contact Deleted !",
+    contactCreated:"Contact Created !",
+    contactNotFound:"Contacts Not Found !",
+    errorCreatingContact:"Error Creating Contact !",
+    errorUpdatingContact:"Error Updating Contact !",
 }
 
 module.exports = {
