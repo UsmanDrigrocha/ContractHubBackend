@@ -543,7 +543,7 @@ const getUserCompanies = async (req, res) => {
             ]
         });
 
-        res.json({ Companies: findCompanies, TotalCompanies: findCompanies.length });
+        res.json({ User: findUser.name, Companies: findCompanies, TotalCompanies: findCompanies.length });
     } catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingUserCompanies });
     }
@@ -1006,7 +1006,7 @@ const deleteContact = async (req, res) => {
     try {
         const { userID } = req.user;
         const contactID = req.params.contactID; // Assuming contactID is passed in the request parameters
-        
+
         const findContacts = await contactModel.findOne({ userID });
         if (!findContacts) {
             return res.status(rc.NOT_FOUND).json({ Message: rm.contactNotFound });
@@ -1019,7 +1019,7 @@ const deleteContact = async (req, res) => {
 
         findContacts.contacts.splice(contactIndex, 1); // Remove the contact
         await findContacts.save();
-        
+
         res.status(rc.OK).json({ Message: rm.contactDeleted });
     } catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorDeletingContact, Error: error.message });
@@ -1057,7 +1057,7 @@ const updateContact = async (req, res) => {
         if (!findContacts) {
             return res.status(rc.NOT_FOUND).json({ Message: rm.contactNotFound });
         }
-        
+
         const contactToUpdate = findContacts.contacts.find(contact => contact._id.equals(contactID));
 
         if (!contactToUpdate) {
@@ -1068,8 +1068,8 @@ const updateContact = async (req, res) => {
         contactToUpdate.email = email;
 
         await findContacts.save();
-        
-        res.status(rc.OK).json({ Message: rm.contactUpdated , Contact : contactToUpdate });
+
+        res.status(rc.OK).json({ Message: rm.contactUpdated, Contact: contactToUpdate });
     } catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorUpdatingContact, Error: error.message });
     }
