@@ -651,9 +651,9 @@ const saveDocumentToServer = async (req, res) => {
                 return res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorUploadingDocument, Error: err.message });
             }
 
-            if (!req?.file) {
-                return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
-            }
+            // if (!req?.file) {
+            //     return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+            // }
 
             const fileType = req.file.mimetype;
             const fileName = req.file.filename;
@@ -709,7 +709,7 @@ const createDocument = async (req, res) => {
         if (req.body.receiver) {
             newDoc.receiver.push(req.body.receiver);
         }
-        newDoc.status="pending"
+        newDoc.status = "pending"
         await newDoc.save();
         res.status(rc.CREATED).json({ Message: rm.docCreatedSuccessfully, Doc: newDoc })
     }
@@ -1076,6 +1076,21 @@ const updateContact = async (req, res) => {
     }
 }
 
+// ------------------------------------ Delete Document --------------------------------------
+const deleteDocument = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const findDoc = await documentModel.findByIdAndDelete(id);
+        if (!findDoc) {
+            return res.status(rc.NOT_FOUND).json({ Message: rm.docsNotfound });
+        }
+        res.status(rc.OK).json({ Message: rm.deletedDocument });
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorDeletingDocument });
+    }
+}
+
+
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
     register,
@@ -1106,5 +1121,6 @@ module.exports = {
     createContact,
     getAllContacts,
     updateContact,
-    deleteContact
+    deleteContact,
+    deleteDocument
 }

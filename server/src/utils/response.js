@@ -73,7 +73,9 @@ const responseMessages = {
     errorCreatingContact:"Error Creating Contact !",
     errorUpdatingContact:"Error Updating Contact !",
     noContactsFound:"Contact Not Found !",
-    foundDocuments:"Documents Found !"
+    foundDocuments:"Documents Found !",
+    errorDeletingDocument:"Error Deleting Document !",
+    deletedDocument:"Document Deleted !",
 }
 
 module.exports = {
