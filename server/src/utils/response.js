@@ -73,7 +73,7 @@ const responseMessages = {
     errorCreatingContact:"Error Creating Contact !",
     errorUpdatingContact:"Error Updating Contact !",
     noContactsFound:"Contact Not Found !",
-    foundDocuments:"Document not found !"
+    foundDocuments:"Documents Found !"
 }
 
 module.exports = {

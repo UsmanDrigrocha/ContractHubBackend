@@ -729,7 +729,7 @@ const getAllDocuments = async (req, res) => {
         if (!foundDocuments) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound })
         }
-        res.status(rc.OK).json({ Message: rm.docsNotfound, Documents: foundDocuments })
+        res.status(rc.OK).json({ Message: rm.foundDocuments, Documents: foundDocuments })
     } catch (error) {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs })
     }
