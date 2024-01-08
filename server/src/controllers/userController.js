@@ -709,6 +709,7 @@ const createDocument = async (req, res) => {
         if (req.body.receiver) {
             newDoc.receiver.push(req.body.receiver);
         }
+        newDoc.status="pending"
         await newDoc.save();
         res.status(rc.CREATED).json({ Message: rm.docCreatedSuccessfully, Doc: newDoc })
     }
