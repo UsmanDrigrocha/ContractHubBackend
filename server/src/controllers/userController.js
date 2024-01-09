@@ -707,7 +707,7 @@ const createDocument = async (req, res) => {
             newDoc.docOwner.push(docsOwner);
         }
         if (req.body.receiver) {
-            newDoc.receiver.push(req.body.receiver);
+            newDoc.receiver=req.body.receiver;
         }
         newDoc.status = "pending"
         await newDoc.save();
