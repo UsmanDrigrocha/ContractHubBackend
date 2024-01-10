@@ -745,16 +745,16 @@ const sendContract = async (req, res) => {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
 
-        const validateAdmin = await companyModel.findOne({
-            $or: [
-                { 'companyOwner.userID': userID },
-                { 'team': { $elemMatch: { 'userID': userID, 'role': 'admin' } } }
-            ]
-        });
+        // const validateAdmin = await companyModel.findOne({
+        //     $or: [
+        //         { 'companyOwner.userID': userID },
+        //         { 'team': { $elemMatch: { 'userID': userID, 'role': 'admin' } } }
+        //     ]
+        // });
 
-        if (!validateAdmin) {
-            return res.status(rc.UNAUTHORIZED).json({ Message: rm.unauthorizedAction });
-        }
+        // if (!validateAdmin) {
+        //     return res.status(rc.UNAUTHORIZED).json({ Message: rm.unauthorizedAction });
+        // }
 
         const findDoc = await documentModel.findOne({ _id: documentId });
 
