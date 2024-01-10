@@ -1,4 +1,4 @@
-const { PDFDocument, rgb } = require('pdf-lib');
+const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 const fs = require('fs').promises;
 
 const main = async () => {
@@ -16,7 +16,10 @@ const main = async () => {
     const { width, height } = firstPage.getSize();
     const fontSize = 30;
     const text = 'Test_LLC';
-    const textWidth = 12
+
+    const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    const textWidth = helveticaBoldFont.widthOfTextAtSize(text, fontSize);
 
     const textX = (width - textWidth) / 2;
     const textY = height / 2; // Adjust the Y coordinate as needed
@@ -25,13 +28,13 @@ const main = async () => {
       x: textX,
       y: textY,
       size: fontSize,
-    //   font: pdfDoc.getFont('Helvetica-Bold'),
+      font: helveticaBoldFont,
       color: rgb(0, 0, 0), // Black color
     });
 
     // Save the modified PDF to a new file
     const modifiedPdfBytes = await pdfDoc.save();
-    await fs.writeFile('output.pdf', modifiedPdfBytes);
+    await fs.writeFile('output_new.pdf', modifiedPdfBytes);
 
     console.log('PDF updated successfully!');
   } catch (error) {
