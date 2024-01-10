@@ -412,6 +412,9 @@
               "properties": {
                 "documentId": {
                   "example": "any"
+                },
+                "receivers": {
+                  "example": "any"
                 }
               }
             }

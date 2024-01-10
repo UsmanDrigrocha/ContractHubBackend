@@ -739,9 +739,9 @@ const getAllDocuments = async (req, res) => {
 const sendContract = async (req, res) => {
     try {
         const { userID } = req.user;
-        const { documentId } = req.body;
+        const { documentId, receivers } = req.body;
 
-        if (!documentId) {
+        if (!documentId || !receivers || receivers.length === 0 || receivers.length === -1) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
 
@@ -753,7 +753,7 @@ const sendContract = async (req, res) => {
         });
 
         if (!validateAdmin) {
-            return res.status(rc.UNAUTHORIZED).json({ Message: rm.userNotFound });
+            return res.status(rc.UNAUTHORIZED).json({ Message: rm.unauthorizedAction });
         }
 
         const findDoc = await documentModel.findOne({ _id: documentId });
@@ -762,6 +762,8 @@ const sendContract = async (req, res) => {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound });
         }
 
+        findDoc.receiver = receivers;
+        await findDoc.save();
         if (!findDoc.receiver || findDoc.receiver.length === 0) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.noReceiver });
         }
@@ -773,7 +775,6 @@ const sendContract = async (req, res) => {
         } else if (typeof findDoc.receiver === 'string') {
             receiverIds.push(findDoc.receiver); // Add the single string ID to the array
         }
-
 
         const findUsers = await userModel.find({ _id: { $in: receiverIds } });
         if (!findUsers || findUsers.length === 0) {
