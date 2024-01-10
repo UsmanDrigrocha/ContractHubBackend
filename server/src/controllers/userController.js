@@ -707,7 +707,7 @@ const createDocument = async (req, res) => {
             newDoc.docOwner.push(docsOwner);
         }
         if (req.body.receiver) {
-            newDoc.receiver=req.body.receiver;
+            newDoc.receiver = req.body.receiver;
         }
         newDoc.status = "pending"
         await newDoc.save();
@@ -1090,6 +1090,26 @@ const deleteDocument = async (req, res) => {
     }
 }
 
+// ------------------------------------ Add Receivers in Doc --------------------------------------
+const addReceivers = async (req, res) => {
+    try {
+        const { userID } = req.user;
+        const { docID } = req.params;
+        const { receivers } = req.body;
+        if (!receivers || receivers.length === 0 || receivers.length === -1) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+        }
+        const findDoc = await documentModel.findOne({ _id: docID });
+        if (!findDoc) {
+            return res.status(rc.NOT_FOUND).json({ Message: rm.docsNotfound });
+        }
+        findDoc.receiver = receivers;
+        await findDoc.save();
+        res.json({ Message: rm.receiversAdded, Receiverss: receivers, Document: findDoc });
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorAddingReceivers, Error: error.message });
+    }
+}
 
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
@@ -1122,5 +1142,6 @@ module.exports = {
     getAllContacts,
     updateContact,
     deleteContact,
-    deleteDocument
+    deleteDocument,
+    addReceivers,
 }
