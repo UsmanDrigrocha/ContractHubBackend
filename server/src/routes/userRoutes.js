@@ -3,7 +3,7 @@ const express = require('express');
 const route = express.Router();
 
 
-const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers, changeCompanyStatus, getUserCompanies, createFolder, getAllFolders, deleteFolder, saveDocumentToServer, createDocument, getAllDocuments, firstVisit, updateUserName, sendContract, addUserTimeZone, contractCompleted, createTemplate, getAllTemplates, getUserTemplates, getCompanyTemplates, createContact, getAllContacts, deleteContact, updateContact, deleteDocument } = require('../controllers/userController');
+const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers, changeCompanyStatus, getUserCompanies, createFolder, getAllFolders, deleteFolder, saveDocumentToServer, createDocument, getAllDocuments, firstVisit, updateUserName, sendContract, addUserTimeZone, contractCompleted, createTemplate, getAllTemplates, getUserTemplates, getCompanyTemplates, createContact, getAllContacts, deleteContact, updateContact, deleteDocument, addReceivers } = require('../controllers/userController');
 const { validateToken } = require('../middlewares/validateToken');
 
 // User Auth Routes
@@ -17,15 +17,16 @@ route.post('/verify-reset-link/:token', verifyResetPasswordLink);
 route.post('/createCompany', validateToken, createCompany);
 route.post('/addTeamMember/:id', validateToken, addTeamMember);
 route.post('/changeCompanyStatus',validateToken,changeCompanyStatus);
-route.post('/createFolder',validateToken,createFolder)
-route.post('/saveDocumentToServer',validateToken,saveDocumentToServer)
-route.post('/createDocument',validateToken,createDocument)
-route.post('/updateFirstVist',validateToken,firstVisit)
-route.post('/sendContract',validateToken,sendContract)
-route.post('/addUserTimeZone',validateToken,addUserTimeZone)
-route.post('/contractCompleted',validateToken,contractCompleted)
-route.post('/createTemplate',validateToken,createTemplate)
-route.post("/createContact",validateToken,createContact)
+route.post('/createFolder',validateToken,createFolder);
+route.post('/saveDocumentToServer',validateToken,saveDocumentToServer);
+route.post('/createDocument',validateToken,createDocument);
+route.post('/updateFirstVist',validateToken,firstVisit);
+route.post('/sendContract',validateToken,sendContract);
+route.post('/addUserTimeZone',validateToken,addUserTimeZone);
+route.post('/contractCompleted',validateToken,contractCompleted);
+route.post('/createTemplate',validateToken,createTemplate);
+route.post("/createContact",validateToken,createContact);
+route.post('/addReceiver/:docID',validateToken,addReceivers);
 
 // Secure Get Routes
 route.get('/getAllTeamMembers', validateToken, getAllTeamMembers);
