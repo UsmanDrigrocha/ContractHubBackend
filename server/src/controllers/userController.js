@@ -745,17 +745,6 @@ const sendContract = async (req, res) => {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
         }
 
-        // const validateAdmin = await companyModel.findOne({
-        //     $or: [
-        //         { 'companyOwner.userID': userID },
-        //         { 'team': { $elemMatch: { 'userID': userID, 'role': 'admin' } } }
-        //     ]
-        // });
-
-        // if (!validateAdmin) {
-        //     return res.status(rc.UNAUTHORIZED).json({ Message: rm.unauthorizedAction });
-        // }
-
         const findDoc = await documentModel.findOne({ _id: documentId });
 
         if (!findDoc) {
@@ -776,11 +765,13 @@ const sendContract = async (req, res) => {
             receiverIds.push(findDoc.receiver); // Add the single string ID to the array
         }
 
-        const findUsers = await contactModel.find({ _id: { $in: receiverIds } });
+
+        let findUsers = await contactModel.findOne({ userID: userID });
         if (!findUsers || findUsers.length === 0) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.userNotFound });
         }
 
+        findUsers = findUsers.contacts
 
         for (const user of findUsers) {
             console.log(user.email)
@@ -1112,6 +1103,7 @@ const addReceivers = async (req, res) => {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorAddingReceivers, Error: error.message });
     }
 }
+
 
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
