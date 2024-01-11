@@ -78,7 +78,9 @@ const responseMessages = {
     deletedDocument:"Document Deleted !",
     errorAddingReceivers:"Error Adding Receivers in Document !",
     receiversAdded:"Added Receivers Successfully !",
-    errorFetchingContacts:"Error Getting Contacts !"
+    errorFetchingContacts:"Error Getting Contacts !",
+    errorGettingDocument:"Error Getting Document !",
+    docFound:"Document Found !",
 }
 
 module.exports = {

@@ -1105,6 +1105,20 @@ const addReceivers = async (req, res) => {
 }
 
 
+// ------------------------------------ Get Single Document --------------------------------------
+const getDocument = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const findDoc =await documentModel.findOne({ _id: id });
+        if (!findDoc) {
+            return res.status(rc.NOT_FOUND).json({ Message: rm.docsNotfound });
+        }
+        res.status(rc.OK).json({ Message: rm.docFound, Document: findDoc })
+    } catch (error) {
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocument, Error: error.message })
+    }
+}
+
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
     register,
@@ -1138,4 +1152,5 @@ module.exports = {
     deleteContact,
     deleteDocument,
     addReceivers,
+    getDocument,
 }

@@ -3,7 +3,7 @@ const express = require('express');
 const route = express.Router();
 
 
-const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers, changeCompanyStatus, getUserCompanies, createFolder, getAllFolders, deleteFolder, saveDocumentToServer, createDocument, getAllDocuments, firstVisit, updateUserName, sendContract, addUserTimeZone, contractCompleted, createTemplate, getAllTemplates, getUserTemplates, getCompanyTemplates, createContact, getAllContacts, deleteContact, updateContact, deleteDocument, addReceivers } = require('../controllers/userController');
+const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers, changeCompanyStatus, getUserCompanies, createFolder, getAllFolders, deleteFolder, saveDocumentToServer, createDocument, getAllDocuments, firstVisit, updateUserName, sendContract, addUserTimeZone, contractCompleted, createTemplate, getAllTemplates, getUserTemplates, getCompanyTemplates, createContact, getAllContacts, deleteContact, updateContact, deleteDocument, addReceivers, getDocument } = require('../controllers/userController');
 const { validateToken } = require('../middlewares/validateToken');
 
 // User Auth Routes
@@ -37,6 +37,7 @@ route.get('/getAllDocuments',validateToken,getAllDocuments)
 route.get('/templates',validateToken, getUserTemplates);
 route.get('/templates/:id',validateToken, getCompanyTemplates);
 route.get('/getAllContacts',validateToken,getAllContacts)
+route.get('/getDocument/:id',validateToken,getDocument)
 
 // Secure Delete Routes
 route.delete('/deleteTeamMember/:id', validateToken, removeTeamMember);
