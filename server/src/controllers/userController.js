@@ -776,13 +776,14 @@ const sendContract = async (req, res) => {
             receiverIds.push(findDoc.receiver); // Add the single string ID to the array
         }
 
-        const findUsers = await userModel.find({ _id: { $in: receiverIds } });
+        const findUsers = await contactModel.find({ _id: { $in: receiverIds } });
         if (!findUsers || findUsers.length === 0) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.userNotFound });
         }
 
 
         for (const user of findUsers) {
+            console.log(user.email)
             const emailSent = await mail(
                 user.email, // Assuming 'email' is the field storing user emails
                 `Contract Notification`,
