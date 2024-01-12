@@ -81,6 +81,7 @@ const responseMessages = {
     errorFetchingContacts:"Error Getting Contacts !",
     errorGettingDocument:"Error Getting Document !",
     docFound:"Document Found !",
+    errorAddingCredentials:"Error Adding Credentials !",
 }
 
 module.exports = {

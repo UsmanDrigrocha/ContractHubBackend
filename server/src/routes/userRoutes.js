@@ -3,7 +3,7 @@ const express = require('express');
 const route = express.Router();
 
 
-const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers, changeCompanyStatus, getUserCompanies, createFolder, getAllFolders, deleteFolder, saveDocumentToServer, createDocument, getAllDocuments, firstVisit, updateUserName, sendContract, addUserTimeZone, contractCompleted, createTemplate, getAllTemplates, getUserTemplates, getCompanyTemplates, createContact, getAllContacts, deleteContact, updateContact, deleteDocument, addReceivers, getDocument } = require('../controllers/userController');
+const { register, login, verifyEmail, sendResetPasswordLink, verifyResetPasswordLink, createCompany, addTeamMember, removeTeamMember, getAllTeamMembers, changeCompanyStatus, getUserCompanies, createFolder, getAllFolders, deleteFolder, saveDocumentToServer, createDocument, getAllDocuments, firstVisit, updateUserName, sendContract, addUserTimeZone, contractCompleted, createTemplate, getAllTemplates, getUserTemplates, getCompanyTemplates, createContact, getAllContacts, deleteContact, updateContact, deleteDocument, addReceivers, getDocument, addCredentials, addCredentialsToPDF } = require('../controllers/userController');
 const { validateToken } = require('../middlewares/validateToken');
 
 // User Auth Routes
@@ -27,6 +27,9 @@ route.post('/contractCompleted',validateToken,contractCompleted);
 route.post('/createTemplate',validateToken,createTemplate);
 route.post("/createContact",validateToken,createContact);
 route.post('/addReceiver/:docID',validateToken,addReceivers);
+route.post('/addCredentials/:docID',validateToken,addCredentials);
+route.post('/addCredentialsToPDF/:docID',validateToken,addCredentialsToPDF);
+
 
 // Secure Get Routes
 route.get('/getAllTeamMembers', validateToken, getAllTeamMembers);
