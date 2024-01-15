@@ -1155,7 +1155,7 @@ const addCredentialsToPDF = async (req, res) => {
 const searchDocument = async (req, res) => {
     try {
         const { userID } = req.user;
-        const { query } = req.query;
+        const { query } = req.body;
 
         const documents = await documentModel.find({
             docOwner: {
