@@ -1157,11 +1157,22 @@ const searchDocument = async (req, res) => {
         const { userID } = req.user;
         const { query } = req.query;
 
+        const documents = await documentModel.find({
+            docOwner: {
+                $in: [userID]
+            },
+            docName: { $regex: new RegExp(query, 'i') }
+        });
+
+        res.json({ Documents: documents });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error searching documents' });
     }
 };
+
+
 
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
@@ -1198,5 +1209,6 @@ module.exports = {
     addReceivers,
     getDocument,
     addCredentials,
-    addCredentialsToPDF
+    addCredentialsToPDF,
+    searchDocument
 }
