@@ -82,6 +82,7 @@ const responseMessages = {
     errorGettingDocument:"Error Getting Document !",
     docFound:"Document Found !",
     errorAddingCredentials:"Error Adding Credentials !",
+    errorSearchingDocuments:"Error Searching Documents !",
 }
 
 module.exports = {

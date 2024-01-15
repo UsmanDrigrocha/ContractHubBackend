@@ -704,8 +704,8 @@ const createDocument = async (req, res) => {
             if (findPending) {
                 newDoc.docFolder = findPending._id;
             }
-            newDoc.docOwner.push(docsOwner);
         }
+        newDoc.docOwner.push(docsOwner);
         if (req.body.receiver) {
             newDoc.receiver = req.body.receiver;
         }
@@ -1149,6 +1149,19 @@ const addCredentialsToPDF = async (req, res) => {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorAddingCredentials });
     }
 }
+
+
+// ------------------------------------ Search Document --------------------------------------
+const searchDocument = async (req, res) => {
+    try {
+        const { userID } = req.user;
+        const { query } = req.query;
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error searching documents' });
+    }
+};
 
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
