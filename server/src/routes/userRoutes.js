@@ -29,6 +29,7 @@ route.post("/createContact",validateToken,createContact);
 route.post('/addReceiver/:docID',validateToken,addReceivers);
 route.post('/addCredentials/:docID',validateToken,addCredentials);
 route.post('/addCredentialsToPDF/:docID',validateToken,addCredentialsToPDF);
+route.post('/searchDocument',validateToken,searchDocument)
 
 
 // Secure Get Routes
@@ -41,7 +42,6 @@ route.get('/templates',validateToken, getUserTemplates);
 route.get('/templates/:id',validateToken, getCompanyTemplates);
 route.get('/getAllContacts',validateToken,getAllContacts)
 route.get('/getDocument/:id',validateToken,getDocument)
-route.get('/searchDocument',validateToken,searchDocument)
 
 // Secure Delete Routes
 route.delete('/deleteTeamMember/:id', validateToken, removeTeamMember);
