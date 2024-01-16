@@ -744,9 +744,8 @@ const getAllDocuments = async (req, res) => {
 
             return {
                 _id: doc._id,
-                docOwner: doc.docOwner,
-                receivers: receiversWithNames,
-                // Add other fields as needed
+                docReceivers: receiversWithNames,
+                Document:doc
             };
         }));
 
@@ -1229,8 +1228,8 @@ const getAllDocumentsWithPagination = async (req, res) => {
     
             return {
                 _id: doc._id,
-                docOwner: doc.docOwner,
-                receivers: receiversWithNames,
+                docReceivers: receiversWithNames,
+                Document:doc
                 // Add other fields as needed
             };
         }));
