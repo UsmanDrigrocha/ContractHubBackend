@@ -14,6 +14,8 @@ const path = require('path');
 
 const mail = require('../utils/sendMail');
 
+const mongoose = require('mongoose');
+
 const companyModel = require('../models/user/companyModel');
 
 const folderModel = require('../models/user/folderModel');
@@ -722,6 +724,13 @@ const getAllDocuments = async (req, res) => {
     try {
         const { userID } = req.user;
 
+        // Retrieve user's contacts
+        const userContacts = await contactModel.findOne({ userID });
+
+        if (!userContacts || !userContacts.contacts) {
+            return res.status(rc.BAD_REQUEST).json({ Message: "Contacts Not Found !" });
+        }
+
         const foundDocuments = await documentModel.find({
             $or: [
                 { docOwner: { $in: [userID] } },
@@ -733,31 +742,18 @@ const getAllDocuments = async (req, res) => {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound });
         }
 
-        // Transform the result to include receiver names
-        const documentsWithReceiverNames = await Promise.all(foundDocuments.map(async (doc) => {
-            const receiversWithNames = await Promise.all(doc.receiver.map(async (receiverId) => {
-                // Assuming you have a 'Contact' model
-                // Replace 'Contact' with your actual contact model
-                const contact = await contactModel.findById(receiverId);
+        const documentsWithReceiverEmails = foundDocuments.map(doc => {
+            const recEmails = doc.receiver.map(rec => {
+                // Assuming Contacts is an array directly under userContacts
+                const contact = userContacts.contacts.find(contact => contact._id.toString() === rec.toString());
                 return contact ? contact.email : null;
-            }));
+            });
+            return { ...doc.toObject(), recEmails };
+        });
 
-            return {
-                _id: doc._id,
-                docReceiversEmails: receiversWithNames,
-                docName :doc.docName , 
-                docURL:doc.docURL,
-                docOwner:doc.docOwner,
-                docFolder:doc.docFolder,
-                isSigned:doc.isSigned,
-                receiver:doc.receiver,
-                status:doc.status,
-                createdAt:doc.createdAt,
-                updatedAt:doc.updatedAt
-            };
-        }));
+        console.log(documentsWithReceiverEmails);
 
-        res.status(rc.OK).json({ Message: rm.foundDocuments, Documents: documentsWithReceiverNames });
+        res.status(rc.OK).json({ Message: rm.foundDocuments, Documents: documentsWithReceiverEmails });
     } catch (error) {
         console.error(error);
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs, Error: error.message });
@@ -1207,9 +1203,9 @@ const getAllDocumentsWithPagination = async (req, res) => {
         const { userID } = req.user;
         const page = parseInt(req.query.page) || 1; // Default to page 1
         const pageSize = parseInt(req.query.pageSize) || 10; // Default to 10 items per page
-    
+
         const skip = (page - 1) * pageSize;
-    
+
         const foundDocuments = await documentModel
             .find({
                 $or: [
@@ -1220,11 +1216,11 @@ const getAllDocumentsWithPagination = async (req, res) => {
             .populate('receiver', 'name')
             .skip(skip)
             .limit(pageSize);
-    
+
         if (!foundDocuments || foundDocuments.length === 0) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound });
         }
-    
+
         // Transform the result to include receiver names
         const documentsWithReceiverNames = await Promise.all(foundDocuments.map(async (doc) => {
             const receiversWithNames = await Promise.all(doc.receiver.map(async (receiverId) => {
@@ -1233,28 +1229,28 @@ const getAllDocumentsWithPagination = async (req, res) => {
                 const contact = await contactModel.findById(receiverId);
                 return contact ? contact.name : null;
             }));
-    
+
             return {
                 _id: doc._id,
                 docReceiversEmails: receiversWithNames,
-                docName :doc.docName , 
-                docURL:doc.docURL,
-                docOwner:doc.docOwner,
-                docFolder:doc.docFolder,
-                isSigned:doc.isSigned,
-                receiver:doc.receiver,
-                status:doc.status,
-                createdAt:doc.createdAt,
-                updatedAt:doc.updatedAt
+                docName: doc.docName,
+                docURL: doc.docURL,
+                docOwner: doc.docOwner,
+                docFolder: doc.docFolder,
+                isSigned: doc.isSigned,
+                receiver: doc.receiver,
+                status: doc.status,
+                createdAt: doc.createdAt,
+                updatedAt: doc.updatedAt
             };
         }));
-    
+
         res.status(rc.OK).json({ Message: rm.foundDocuments, Documents: documentsWithReceiverNames });
     } catch (error) {
         console.error(error);
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs, Error: error.message });
     }
-    
+
 }
 
 // ------------------------------------ Exports --------------------------------------
