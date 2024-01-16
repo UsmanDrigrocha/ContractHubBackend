@@ -717,7 +717,7 @@ const createDocument = async (req, res) => {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorCreatingDocument, Error: error.message })
     }
 }
-// ------------------------------------ Create All Document --------------------------------------
+// ------------------------------------ Get All Document --------------------------------------
 const getAllDocuments = async (req, res) => {
     try {
         const { userID } = req.user;
@@ -756,7 +756,6 @@ const getAllDocuments = async (req, res) => {
         res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs , Error:errro.message});
     }
 };
-
 
 // ------------------------------------ Send Contract --------------------------------------
 const sendContract = async (req, res) => {
