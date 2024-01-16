@@ -651,9 +651,9 @@ const saveDocumentToServer = async (req, res) => {
                 return res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorUploadingDocument, Error: err.message });
             }
 
-            // if (!req?.file) {
-            //     return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
-            // }
+            if (!req?.file) {
+                return res.status(rc.BAD_REQUEST).json({ Message: rm.enterAllFields });
+            }
 
             const fileType = req.file.mimetype;
             const fileName = req.file.filename;
@@ -721,20 +721,43 @@ const createDocument = async (req, res) => {
 const getAllDocuments = async (req, res) => {
     try {
         const { userID } = req.user;
+
         const foundDocuments = await documentModel.find({
             $or: [
-                { docOwner: { $in: [userID] } }, // Check if userID is in docOwner array
-                { receiver: { $in: [userID] } } // Check if userID is in receiver array
+                { docOwner: { $in: [userID] } },
+                { receiver: { $in: [userID] } }
             ]
-        });
-        if (!foundDocuments) {
-            return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound })
+        }).populate('receiver', 'name');
+
+        if (!foundDocuments || foundDocuments.length === 0) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound });
         }
-        res.status(rc.OK).json({ Message: rm.foundDocuments, Documents: foundDocuments })
+
+        // Transform the result to include receiver names
+        const documentsWithReceiverNames = await Promise.all(foundDocuments.map(async (doc) => {
+            const receiversWithNames = await Promise.all(doc.receiver.map(async (receiverId) => {
+                // Assuming you have a 'Contact' model
+                // Replace 'Contact' with your actual contact model
+                const contact = await contactModel.findById(receiverId);
+                return contact ? contact.name : null;
+            }));
+
+            return {
+                _id: doc._id,
+                docOwner: doc.docOwner,
+                receivers: receiversWithNames,
+                // Add other fields as needed
+            };
+        }));
+
+        res.status(rc.OK).json({ Message: rm.foundDocuments, Documents: documentsWithReceiverNames });
     } catch (error) {
-        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs })
+        console.error(error);
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs, Error: error.message });
     }
-}
+};
+
+
 // ------------------------------------ Send Contract --------------------------------------
 const sendContract = async (req, res) => {
     try {
