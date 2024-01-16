@@ -753,7 +753,7 @@ const getAllDocuments = async (req, res) => {
         res.status(rc.OK).json({ Message: rm.foundDocuments, Documents: documentsWithReceiverNames });
     } catch (error) {
         console.error(error);
-        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs, Error: errro.message });
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs, Error: error.message });
     }
 };
 
