@@ -727,7 +727,7 @@ const getAllDocuments = async (req, res) => {
                 { docOwner: { $in: [userID] } },
                 { receiver: { $in: [userID] } }
             ]
-        }).populate('receiver', 'name');
+        }).populate('receiver', 'email');
 
         if (!foundDocuments || foundDocuments.length === 0) {
             return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound });
@@ -739,7 +739,7 @@ const getAllDocuments = async (req, res) => {
                 // Assuming you have a 'Contact' model
                 // Replace 'Contact' with your actual contact model
                 const contact = await contactModel.findById(receiverId);
-                return contact ? contact.name : null;
+                return contact ? contact.email : null;
             }));
 
             return {
