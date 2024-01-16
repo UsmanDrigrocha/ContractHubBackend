@@ -663,7 +663,7 @@ const saveDocumentToServer = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(rc.INTERNAL_SERVER_ERROR).json({ message: rm.errorUploadingDocument });
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ message: rm.errorUploadingDocument, Error: error.message });
     }
 };
 // ------------------------------------ First Visit --------------------------------------
