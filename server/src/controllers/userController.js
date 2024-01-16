@@ -744,8 +744,16 @@ const getAllDocuments = async (req, res) => {
 
             return {
                 _id: doc._id,
-                docReceivers: receiversWithNames,
-                Document:doc
+                docReceiversEmails: receiversWithNames,
+                docName :doc.docName , 
+                docURL:doc.docURL,
+                docOwner:doc.docOwner,
+                docFolder:doc.docFolder,
+                isSigned:doc.isSigned,
+                receiver:doc.receiver,
+                status:doc.status,
+                createdAt:doc.createdAt,
+                updatedAt:doc.updatedAt
             };
         }));
 
@@ -1228,9 +1236,16 @@ const getAllDocumentsWithPagination = async (req, res) => {
     
             return {
                 _id: doc._id,
-                docReceivers: receiversWithNames,
-                Document:doc
-                // Add other fields as needed
+                docReceiversEmails: receiversWithNames,
+                docName :doc.docName , 
+                docURL:doc.docURL,
+                docOwner:doc.docOwner,
+                docFolder:doc.docFolder,
+                isSigned:doc.isSigned,
+                receiver:doc.receiver,
+                status:doc.status,
+                createdAt:doc.createdAt,
+                updatedAt:doc.updatedAt
             };
         }));
     
