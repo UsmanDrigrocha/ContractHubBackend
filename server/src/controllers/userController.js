@@ -753,7 +753,7 @@ const getAllDocuments = async (req, res) => {
         res.status(rc.OK).json({ Message: rm.foundDocuments, Documents: documentsWithReceiverNames });
     } catch (error) {
         console.error(error);
-        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs , Error:errro.message});
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs, Error: errro.message });
     }
 };
 
@@ -1194,7 +1194,54 @@ const searchDocument = async (req, res) => {
     }
 };
 
-
+// ------------------------------------ Get Documents With Pagination --------------------------------------
+const getAllDocumentsWithPagination = async (req, res) => {
+    try {
+        const { userID } = req.user;
+        const page = parseInt(req.query.page) || 1; // Default to page 1
+        const pageSize = parseInt(req.query.pageSize) || 10; // Default to 10 items per page
+    
+        const skip = (page - 1) * pageSize;
+    
+        const foundDocuments = await documentModel
+            .find({
+                $or: [
+                    { docOwner: { $in: [userID] } },
+                    { receiver: { $in: [userID] } }
+                ]
+            })
+            .populate('receiver', 'name')
+            .skip(skip)
+            .limit(pageSize);
+    
+        if (!foundDocuments || foundDocuments.length === 0) {
+            return res.status(rc.BAD_REQUEST).json({ Message: rm.docsNotfound });
+        }
+    
+        // Transform the result to include receiver names
+        const documentsWithReceiverNames = await Promise.all(foundDocuments.map(async (doc) => {
+            const receiversWithNames = await Promise.all(doc.receiver.map(async (receiverId) => {
+                // Assuming you have a 'Contact' model
+                // Replace 'Contact' with your actual contact model
+                const contact = await contactModel.findById(receiverId);
+                return contact ? contact.name : null;
+            }));
+    
+            return {
+                _id: doc._id,
+                docOwner: doc.docOwner,
+                receivers: receiversWithNames,
+                // Add other fields as needed
+            };
+        }));
+    
+        res.status(rc.OK).json({ Message: rm.foundDocuments, Documents: documentsWithReceiverNames });
+    } catch (error) {
+        console.error(error);
+        res.status(rc.INTERNAL_SERVER_ERROR).json({ Message: rm.errorGettingDocs, Error: error.message });
+    }
+    
+}
 
 // ------------------------------------ Exports --------------------------------------
 module.exports = {
@@ -1232,5 +1279,6 @@ module.exports = {
     getDocument,
     addCredentials,
     addCredentialsToPDF,
-    searchDocument
+    searchDocument,
+    getAllDocumentsWithPagination
 }
